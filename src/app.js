@@ -16,6 +16,9 @@
   }
 ];
 
+const homePanel = document.querySelector('#homePanel');
+const haoZone = document.querySelector('#haoZone');
+const haoZoneButton = document.querySelector('#haoZoneButton');
 const gallery = document.querySelector('#gallery');
 const mainImage = document.querySelector('#mainImage');
 const viewerTitle = document.querySelector('#viewerTitle');
@@ -36,7 +39,6 @@ function formatToday() {
   return `${year}${month}${day}`;
 }
 
-
 function formatTaipeiTime() {
   const parts = new Intl.DateTimeFormat('zh-TW', {
     timeZone: 'Asia/Taipei',
@@ -56,17 +58,30 @@ function formatTaipeiTime() {
 function updateLiveTime() {
   liveTime.textContent = `現在時間 ${formatTaipeiTime()}`;
 }
+
 function setUpdateDate() {
   updateDate.textContent = `目前更新到 ${formatToday()}`;
 }
 
+function showHome() {
+  homePanel.hidden = false;
+  haoZone.hidden = true;
+  history.replaceState(null, '', location.pathname);
+}
+
+function showHaoZone() {
+  homePanel.hidden = true;
+  haoZone.hidden = false;
+  showCover();
+  history.replaceState(null, '', '#hao');
+}
+
 function showCover() {
   mainImage.src = coverImage;
-  mainImage.alt = '摘要圖封面';
-  viewerTitle.textContent = `目前更新到 ${formatToday()}`;
+  mainImage.alt = '皓哥專區封面';
+  viewerTitle.textContent = '皓哥開示摘要圖';
   openImage.href = coverImage;
   openImage.textContent = '開啟封面';
-  homeButton.hidden = true;
   emptyState.hidden = true;
   mainImage.hidden = false;
 
@@ -76,13 +91,15 @@ function showCover() {
 }
 
 function selectItem(item) {
+  homePanel.hidden = true;
+  haoZone.hidden = false;
+
   const src = imagePath(item.file);
   mainImage.src = src;
   mainImage.alt = item.title;
   viewerTitle.textContent = item.title;
   openImage.href = src;
   openImage.textContent = '開啟原圖';
-  homeButton.hidden = false;
   emptyState.hidden = true;
   mainImage.hidden = false;
 
@@ -91,11 +108,6 @@ function selectItem(item) {
   });
 
   history.replaceState(null, '', `#${item.date}`);
-}
-
-function returnHome() {
-  history.replaceState(null, '', location.pathname);
-  showCover();
 }
 
 function renderGallery() {
@@ -116,7 +128,8 @@ function renderGallery() {
   });
 }
 
-homeButton.addEventListener('click', returnHome);
+haoZoneButton.addEventListener('click', showHaoZone);
+homeButton.addEventListener('click', showHome);
 
 setUpdateDate();
 updateLiveTime();
@@ -128,9 +141,8 @@ const initial = items.find((item) => item.date === hashDate);
 
 if (initial) {
   selectItem(initial);
+} else if (hashDate === 'hao') {
+  showHaoZone();
 } else {
-  showCover();
+  showHome();
 }
-
-
-

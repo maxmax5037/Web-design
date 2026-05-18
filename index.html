@@ -9,34 +9,46 @@
   <body>
     <header class="site-header">
       <div>
-        <p class="eyebrow">Daily Notes Gallery</p>
+        <p class="eyebrow">Max Test Area</p>
         <h1>Max測試專區</h1>
       </div>
-      <div class="header-status"><p class="header-meta" id="updateDate">目前更新到 --</p><p class="live-time" id="liveTime">現在時間 --</p></div>
+      <div class="header-status">
+        <p class="header-meta" id="updateDate">目前更新到 --</p>
+        <p class="live-time" id="liveTime">現在時間 --</p>
+      </div>
     </header>
 
-    <main class="layout">
-      <section class="gallery" aria-label="摘要圖列表" id="gallery"></section>
+    <main>
+      <section class="home-panel" id="homePanel" aria-label="主頁入口">
+        <button class="zone-card" id="haoZoneButton" type="button">
+          <span class="zone-label">皓哥專區</span>
+          <span class="zone-desc">查看皓哥開示摘要圖</span>
+          <span class="zone-action">進入</span>
+        </button>
+      </section>
 
-      <section class="viewer" aria-label="圖片預覽">
-        <div class="viewer-header">
-          <div>
-            <p class="eyebrow">Preview</p>
-            <h2 id="viewerTitle">選擇一張摘要圖</h2>
+      <section class="layout" id="haoZone" aria-label="皓哥專區" hidden>
+        <section class="gallery" aria-label="摘要圖列表" id="gallery"></section>
+
+        <section class="viewer" aria-label="圖片預覽">
+          <div class="viewer-header">
+            <div>
+              <p class="eyebrow">皓哥專區</p>
+              <h2 id="viewerTitle">皓哥開示摘要圖</h2>
+            </div>
+            <div class="viewer-actions">
+              <button class="home-button" id="homeButton" type="button">返回主頁</button>
+              <a class="open-link" id="openImage" href="#" target="_blank" rel="noreferrer">開啟封面</a>
+            </div>
           </div>
-          <div class="viewer-actions"><button class="home-button" id="homeButton" type="button" hidden>返回主頁</button><a class="open-link" id="openImage" href="#" target="_blank" rel="noreferrer">開啟原圖</a></div>
-        </div>
-        <div class="image-frame">
-          <img id="mainImage" alt="摘要圖預覽" />
-          <p class="empty-state" id="emptyState">從左側選一個日期開始查看。</p>
-        </div>
+          <div class="image-frame">
+            <img id="mainImage" alt="摘要圖預覽" />
+            <p class="empty-state" id="emptyState">從左側選一個日期開始查看。</p>
+          </div>
+        </section>
       </section>
     </main>
 
     <script src="./src/app.js"></script>
   </body>
 </html>
-
-
-
-
