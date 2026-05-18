@@ -349,6 +349,11 @@ function isUsMarketRefreshTime(time = getTaipeiNow()) {
   return eveningSession || overnightSession;
 }
 
+function isFundRefreshTime(time = getTaipeiNow()) {
+  const minutes = minutesSinceMidnight(time);
+  return isWeekdayTaipei(time) && minutes >= (17 * 60 + 50) && minutes <= (18 * 60 + 30);
+}
+
 function refreshMarketsBySchedule() {
   if (isTaiwanMarketRefreshTime()) {
     loadTaiwanMarketInfo();
@@ -526,7 +531,7 @@ async function loadMengFunds() {
     });
 
     fundNote.textContent = seen.size > 0
-      ? '來源：玉山銀行基金資訊。進入專區時更新一次。'
+      ? '來源：玉山銀行基金資訊。進入專區先抓一次，平日 17:50-18:30 每 5 秒更新。'
       : '基金資料目前無法讀取，請稍後重新整理。';
   } catch (error) {
     Object.values(fundCards).forEach((card) => {
@@ -580,6 +585,12 @@ function showMengZone() {
   headerHomeButton.hidden = false;
   history.replaceState(null, '', '#mengjie');
   loadMengFunds();
+}
+
+function refreshFundsBySchedule() {
+  if (!mengZone.hidden && isFundRefreshTime()) {
+    loadMengFunds();
+  }
 }
 
 function showNotePlaceholder() {
@@ -668,7 +679,9 @@ loadTaiwanMarketInfo();
 loadTaiwanNightMarketInfo();
 loadUsMarketInfo();
 setInterval(refreshMarketsBySchedule, 5000);
+setInterval(refreshFundsBySchedule, 5000);
 boot();
+
 
 
 
