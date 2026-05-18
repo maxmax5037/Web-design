@@ -131,6 +131,33 @@ h2 {
   background: var(--surface-soft);
 }
 
+
+.viewer-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.home-button {
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  color: var(--accent);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  padding: 9px 12px;
+  background: var(--surface);
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.home-button:hover,
+.open-link:hover {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
 .open-link {
   border: 1px solid var(--line);
   border-radius: 7px;
@@ -184,3 +211,4 @@ h2 {
     min-height: 360px;
   }
 }
+

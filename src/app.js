@@ -22,6 +22,7 @@ const viewerTitle = document.querySelector('#viewerTitle');
 const openImage = document.querySelector('#openImage');
 const emptyState = document.querySelector('#emptyState');
 const updateDate = document.querySelector('#updateDate');
+const homeButton = document.querySelector('#homeButton');
 
 const imagePath = (file) => `./public/uploads/images/${encodeURIComponent(file)}`;
 const coverImage = './public/uploads/images/cover.svg';
@@ -44,6 +45,7 @@ function showCover() {
   viewerTitle.textContent = `目前更新到 ${formatToday()}`;
   openImage.href = coverImage;
   openImage.textContent = '開啟封面';
+  homeButton.hidden = true;
   emptyState.hidden = true;
   mainImage.hidden = false;
 
@@ -59,6 +61,7 @@ function selectItem(item) {
   viewerTitle.textContent = item.title;
   openImage.href = src;
   openImage.textContent = '開啟原圖';
+  homeButton.hidden = false;
   emptyState.hidden = true;
   mainImage.hidden = false;
 
@@ -67,6 +70,11 @@ function selectItem(item) {
   });
 
   history.replaceState(null, '', `#${item.date}`);
+}
+
+function returnHome() {
+  history.replaceState(null, '', location.pathname);
+  showCover();
 }
 
 function renderGallery() {
@@ -87,6 +95,8 @@ function renderGallery() {
   });
 }
 
+homeButton.addEventListener('click', returnHome);
+
 setUpdateDate();
 renderGallery();
 
@@ -98,3 +108,4 @@ if (initial) {
 } else {
   showCover();
 }
+
