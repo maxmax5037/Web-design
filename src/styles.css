@@ -525,6 +525,9 @@ h2 {
 }
 
 [hidden] {
+  display: none !important;
+}
+
 @media (max-width: 860px) {
   .site-header,
   .viewer-header,
@@ -562,3 +565,4 @@ h2 {
     padding: 20px;
   }
 }
+
