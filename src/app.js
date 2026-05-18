@@ -21,8 +21,36 @@ const mainImage = document.querySelector('#mainImage');
 const viewerTitle = document.querySelector('#viewerTitle');
 const openImage = document.querySelector('#openImage');
 const emptyState = document.querySelector('#emptyState');
+const updateDate = document.querySelector('#updateDate');
 
 const imagePath = (file) => `./public/uploads/images/${encodeURIComponent(file)}`;
+const coverImage = './public/uploads/images/cover.svg';
+
+function formatToday() {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, '0');
+  const day = String(now.getDate()).padStart(2, '0');
+  return `${year}${month}${day}`;
+}
+
+function setUpdateDate() {
+  updateDate.textContent = `目前更新到 ${formatToday()}`;
+}
+
+function showCover() {
+  mainImage.src = coverImage;
+  mainImage.alt = '摘要圖封面';
+  viewerTitle.textContent = `目前更新到 ${formatToday()}`;
+  openImage.href = coverImage;
+  openImage.textContent = '開啟封面';
+  emptyState.hidden = true;
+  mainImage.hidden = false;
+
+  document.querySelectorAll('.gallery-card').forEach((card) => {
+    card.classList.remove('is-active');
+  });
+}
 
 function selectItem(item) {
   const src = imagePath(item.file);
@@ -30,6 +58,7 @@ function selectItem(item) {
   mainImage.alt = item.title;
   viewerTitle.textContent = item.title;
   openImage.href = src;
+  openImage.textContent = '開啟原圖';
   emptyState.hidden = true;
   mainImage.hidden = false;
 
@@ -58,9 +87,14 @@ function renderGallery() {
   });
 }
 
+setUpdateDate();
 renderGallery();
-mainImage.hidden = true;
 
 const hashDate = decodeURIComponent(location.hash.replace('#', ''));
-const initial = items.find((item) => item.date === hashDate) || items[0];
-selectItem(initial);
+const initial = items.find((item) => item.date === hashDate);
+
+if (initial) {
+  selectItem(initial);
+} else {
+  showCover();
+}
