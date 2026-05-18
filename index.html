@@ -20,38 +20,45 @@
 
     <main>
       <section class="home-panel" id="homePanel" aria-label="主頁入口">
-        <article class="market-card" aria-label="即時大盤資訊">
-          <div class="market-head">
+        <article class="market-card market-card-google" aria-label="即時大盤資訊">
+          <div class="market-title-row">
             <div>
-              <p class="eyebrow">Market</p>
-              <h2>即時大盤資訊</h2>
+              <h2 class="market-name">加權指數</h2>
+              <p class="market-symbol">TPE: IX0001 <span aria-hidden="true">︙</span></p>
             </div>
             <span class="market-source">TWSE</span>
           </div>
-          <div class="market-main">
-            <span class="market-label">加權指數</span>
+
+          <div class="market-quote">
             <strong class="market-index" id="marketIndex">讀取中</strong>
             <span class="market-change" id="marketChange">--</span>
+            <p class="market-stamp"><span id="marketDate">--</span> <span id="marketTime">--</span> GMT+8 · <span class="market-disclaimer">免責聲明</span></p>
           </div>
-          <dl class="market-grid">
-            <div>
-              <dt>資料時間</dt>
-              <dd id="marketTime">--</dd>
-            </div>
-            <div>
-              <dt>日內高點</dt>
-              <dd id="marketHigh">--</dd>
-            </div>
-            <div>
-              <dt>日內低點</dt>
-              <dd id="marketLow">--</dd>
-            </div>
-            <div>
-              <dt>資料日期</dt>
-              <dd id="marketDate">--</dd>
-            </div>
+
+          <nav class="range-tabs" aria-label="圖表期間">
+            <button class="range-tab is-active" type="button">1 天</button>
+            <button class="range-tab" type="button">5 天</button>
+            <button class="range-tab" type="button">1 個月</button>
+            <button class="range-tab" type="button">6 個月</button>
+            <button class="range-tab" type="button">本年迄今</button>
+            <button class="range-tab" type="button">1 年</button>
+            <button class="range-tab" type="button">5 年</button>
+            <button class="range-tab" type="button">最久</button>
+          </nav>
+
+          <div class="market-chart" aria-label="加權指數日內走勢圖">
+            <svg id="marketKChart" viewBox="0 0 760 250" role="img" aria-label="加權指數日內走勢圖"></svg>
+          </div>
+
+          <dl class="market-stats">
+            <div><dt>開盤</dt><dd id="marketOpen">--</dd></div>
+            <div><dt>最低</dt><dd id="marketLow">--</dd></div>
+            <div><dt>52 週高點</dt><dd id="marketHigh52">--</dd></div>
+            <div><dt>最高</dt><dd id="marketHigh">--</dd></div>
+            <div><dt>上次收盤價</dt><dd id="marketPrevClose">--</dd></div>
+            <div><dt>52 週低點</dt><dd id="marketLow52">--</dd></div>
           </dl>
-          <div class="market-chart" aria-label="加權指數日內 K 線圖"><div class="chart-head"><span>日內 5 分鐘 K 線</span><span id="chartRange">--</span></div><svg id="marketKChart" viewBox="0 0 720 260" role="img" aria-label="加權指數日內 5 分鐘 K 線圖"></svg></div><p class="market-note" id="marketNote">來源：臺灣證券交易所每 5 秒指數統計。頁面約每 60 秒更新一次。</p>
+          <p class="market-note" id="marketNote">來源：臺灣證券交易所每 5 秒指數統計。頁面約每 60 秒更新一次。</p>
         </article>
 
         <button class="zone-card" id="haoZoneButton" type="button">
@@ -86,4 +93,5 @@
     <script src="./src/app.js"></script>
   </body>
 </html>
+
 
