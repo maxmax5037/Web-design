@@ -170,58 +170,48 @@ h2 {
 }
 
 
-.market-chart {
+
+.us-index-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.us-index-card {
   border: 1px solid var(--line);
   border-radius: 8px;
-  background: #ffffff;
-  padding: 12px;
+  background: #f8fafc;
+  display: grid;
+  gap: 7px;
+  padding: 14px;
 }
 
-.chart-head {
-  display: flex;
-  justify-content: space-between;
-  gap: 12px;
+.us-index-name {
   color: var(--muted);
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 800;
-  margin-bottom: 8px;
 }
 
-.market-chart svg {
-  display: block;
-  width: 100%;
-  height: auto;
+.us-index-card strong {
+  color: var(--text);
+  font-size: clamp(22px, 4vw, 30px);
+  line-height: 1.05;
 }
 
-.chart-grid-line {
-  stroke: #e5edf5;
-  stroke-width: 1;
+.us-index-change {
+  color: var(--muted);
+  font-size: 14px;
+  font-weight: 800;
 }
 
-.chart-axis-label {
-  fill: var(--muted);
-  font-size: 11px;
-  font-weight: 700;
+.us-index-change[data-direction="up"],
+.market-change[data-direction="up"] {
+  color: #178f5b;
 }
 
-.candle-wick {
-  stroke-width: 1.5;
-}
-
-.candle-body.candle-up {
-  fill: #178f5b;
-}
-
-.candle-wick.candle-up {
-  stroke: #178f5b;
-}
-
-.candle-body.candle-down {
-  fill: #c43d3d;
-}
-
-.candle-wick.candle-down {
-  stroke: #c43d3d;
+.us-index-change[data-direction="down"],
+.market-change[data-direction="down"] {
+  color: #c43d3d;
 }
 .market-note {
   margin: 0;
@@ -417,7 +407,8 @@ h2 {
     grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
   }
 
-  .market-grid {
+  .market-grid,
+  .us-index-grid {
     grid-template-columns: 1fr;
   }
 
@@ -425,5 +416,7 @@ h2 {
     min-height: 360px;
   }
 }
+
+
 
 

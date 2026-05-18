@@ -20,11 +20,11 @@
 
     <main>
       <section class="home-panel" id="homePanel" aria-label="主頁入口">
-        <article class="market-card" aria-label="即時大盤資訊">
+        <article class="market-card" aria-label="台股">
           <div class="market-head">
             <div>
               <p class="eyebrow">Market</p>
-              <h2>即時大盤資訊</h2>
+              <h2>台股</h2>
             </div>
             <span class="market-source">TWSE</span>
           </div>
@@ -51,7 +51,40 @@
               <dd id="marketDate">--</dd>
             </div>
           </dl>
-          <div class="market-chart" aria-label="加權指數日內 K 線圖"><div class="chart-head"><span>日內 5 分鐘 K 線</span><span id="chartRange">--</span></div><svg id="marketKChart" viewBox="0 0 720 260" role="img" aria-label="加權指數日內 5 分鐘 K 線圖"></svg></div><p class="market-note" id="marketNote">來源：臺灣證券交易所每 5 秒指數統計。頁面約每 60 秒更新一次。</p>
+          <p class="market-note" id="marketNote">來源：臺灣證券交易所每 5 秒指數統計。頁面每 5 秒嘗試更新一次。</p>
+        </article>
+
+        <article class="market-card" aria-label="美股">
+          <div class="market-head">
+            <div>
+              <p class="eyebrow">US Market</p>
+              <h2>美股</h2>
+            </div>
+            <span class="market-source">Yahoo</span>
+          </div>
+          <div class="us-index-grid" id="usIndexGrid">
+            <div class="us-index-card" data-symbol="^DJI">
+              <span class="us-index-name">道瓊指數</span>
+              <strong id="us-dji">讀取中</strong>
+              <span class="us-index-change" id="us-dji-change">--</span>
+            </div>
+            <div class="us-index-card" data-symbol="^IXIC">
+              <span class="us-index-name">NASDAQ</span>
+              <strong id="us-ixic">讀取中</strong>
+              <span class="us-index-change" id="us-ixic-change">--</span>
+            </div>
+            <div class="us-index-card" data-symbol="^GSPC">
+              <span class="us-index-name">S&amp;P 500</span>
+              <strong id="us-gspc">讀取中</strong>
+              <span class="us-index-change" id="us-gspc-change">--</span>
+            </div>
+            <div class="us-index-card" data-symbol="^SOX">
+              <span class="us-index-name">費城半導體</span>
+              <strong id="us-sox">讀取中</strong>
+              <span class="us-index-change" id="us-sox-change">--</span>
+            </div>
+          </div>
+          <p class="market-note" id="usMarketNote">美股資料每 5 秒嘗試更新一次；實際更新頻率依資料來源而定。</p>
         </article>
 
         <button class="zone-card" id="haoZoneButton" type="button">
@@ -86,4 +119,3 @@
     <script src="./src/app.js"></script>
   </body>
 </html>
-

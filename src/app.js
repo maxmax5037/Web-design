@@ -16,6 +16,13 @@
   }
 ];
 
+const usIndices = [
+  { symbol: '^DJI', valueId: 'us-dji', changeId: 'us-dji-change' },
+  { symbol: '^IXIC', valueId: 'us-ixic', changeId: 'us-ixic-change' },
+  { symbol: '^GSPC', valueId: 'us-gspc', changeId: 'us-gspc-change' },
+  { symbol: '^SOX', valueId: 'us-sox', changeId: 'us-sox-change' }
+];
+
 const homePanel = document.querySelector('#homePanel');
 const haoZone = document.querySelector('#haoZone');
 const haoZoneButton = document.querySelector('#haoZoneButton');
@@ -34,8 +41,7 @@ const marketHigh = document.querySelector('#marketHigh');
 const marketLow = document.querySelector('#marketLow');
 const marketDate = document.querySelector('#marketDate');
 const marketNote = document.querySelector('#marketNote');
-const marketKChart = document.querySelector('#marketKChart');
-const chartRange = document.querySelector('#chartRange');
+const usMarketNote = document.querySelector('#usMarketNote');
 
 const imagePath = (file) => `./public/uploads/images/${encodeURIComponent(file)}`;
 const coverImage = './public/uploads/images/cover.svg';
@@ -72,7 +78,6 @@ function setUpdateDate() {
   updateDate.textContent = `目前更新到 ${formatToday()}`;
 }
 
-
 function parseMarketNumber(value) {
   return Number(String(value).replace(/,/g, ''));
 }
@@ -91,123 +96,14 @@ function formatMarketDate(value) {
   return `${value.slice(0, 4)}/${value.slice(4, 6)}/${value.slice(6, 8)}`;
 }
 
-
-function createCandles(rows) {
-  const buckets = new Map();
-
-  rows.forEach((row) => {
-    const [time, rawIndex] = row;
-    const price = parseMarketNumber(rawIndex);
-    if (!Number.isFinite(price) || !time) {
-      return;
-    }
-
-    const [hour, minute] = time.split(':').map(Number);
-    const bucketMinute = Math.floor(minute / 5) * 5;
-    const key = `${String(hour).padStart(2, '0')}:${String(bucketMinute).padStart(2, '0')}`;
-
-    if (!buckets.has(key)) {
-      buckets.set(key, {
-        time: key,
-        open: price,
-        high: price,
-        low: price,
-        close: price
-      });
-      return;
-    }
-
-    const candle = buckets.get(key);
-    candle.high = Math.max(candle.high, price);
-    candle.low = Math.min(candle.low, price);
-    candle.close = price;
-  });
-
-  return Array.from(buckets.values());
+function setChangeText(element, change, percent, suffix = '') {
+  const direction = change > 0 ? 'up' : change < 0 ? 'down' : 'flat';
+  const sign = change > 0 ? '+' : '';
+  element.textContent = `${sign}${formatMarketNumber(change)} (${sign}${percent.toFixed(2)}%)${suffix}`;
+  element.dataset.direction = direction;
 }
 
-function renderKChart(candles) {
-  marketKChart.innerHTML = '';
-
-  if (!candles.length) {
-    chartRange.textContent = '--';
-    return;
-  }
-
-  const width = 720;
-  const height = 260;
-  const pad = { top: 20, right: 54, bottom: 30, left: 14 };
-  const plotWidth = width - pad.left - pad.right;
-  const plotHeight = height - pad.top - pad.bottom;
-  const lows = candles.map((candle) => candle.low);
-  const highs = candles.map((candle) => candle.high);
-  const min = Math.min(...lows);
-  const max = Math.max(...highs);
-  const range = max - min || 1;
-  const step = plotWidth / candles.length;
-  const bodyWidth = Math.max(3, Math.min(9, step * 0.55));
-  const ns = 'http://www.w3.org/2000/svg';
-
-  function y(value) {
-    return pad.top + ((max - value) / range) * plotHeight;
-  }
-
-  function add(tag, attrs) {
-    const element = document.createElementNS(ns, tag);
-    Object.entries(attrs).forEach(([key, value]) => element.setAttribute(key, value));
-    marketKChart.appendChild(element);
-    return element;
-  }
-
-  [min, (min + max) / 2, max].forEach((value) => {
-    const yy = y(value);
-    add('line', {
-      x1: pad.left,
-      y1: yy,
-      x2: width - pad.right,
-      y2: yy,
-      class: 'chart-grid-line'
-    });
-    add('text', {
-      x: width - pad.right + 8,
-      y: yy + 4,
-      class: 'chart-axis-label'
-    }).textContent = formatMarketNumber(value);
-  });
-
-  candles.forEach((candle, index) => {
-    const x = pad.left + index * step + step / 2;
-    const up = candle.close >= candle.open;
-    const colorClass = up ? 'candle-up' : 'candle-down';
-    const highY = y(candle.high);
-    const lowY = y(candle.low);
-    const openY = y(candle.open);
-    const closeY = y(candle.close);
-    const bodyTop = Math.min(openY, closeY);
-    const bodyHeight = Math.max(2, Math.abs(closeY - openY));
-
-    add('line', {
-      x1: x,
-      y1: highY,
-      x2: x,
-      y2: lowY,
-      class: `candle-wick ${colorClass}`
-    });
-    add('rect', {
-      x: x - bodyWidth / 2,
-      y: bodyTop,
-      width: bodyWidth,
-      height: bodyHeight,
-      rx: 1,
-      class: `candle-body ${colorClass}`
-    });
-  });
-
-  const first = candles[0].time;
-  const last = candles[candles.length - 1].time;
-  chartRange.textContent = `${first} - ${last}`;
-}
-async function loadMarketInfo() {
+async function loadTaiwanMarketInfo() {
   const endpoint = 'https://www.twse.com.tw/rwd/zh/TAIEX/MI_5MINS_INDEX?response=json';
 
   try {
@@ -231,18 +127,14 @@ async function loadMarketInfo() {
     const low = Math.min(...values);
     const change = latestIndex - firstIndex;
     const percent = firstIndex ? (change / firstIndex) * 100 : 0;
-    const direction = change > 0 ? 'up' : change < 0 ? 'down' : 'flat';
-    const sign = change > 0 ? '+' : '';
 
     marketIndex.textContent = formatMarketNumber(latestIndex);
-    marketChange.textContent = `${sign}${formatMarketNumber(change)} (${sign}${percent.toFixed(2)}%) 較09:00`;
-    marketChange.dataset.direction = direction;
+    setChangeText(marketChange, change, percent, ' 較09:00');
     marketTime.textContent = latest[0];
     marketHigh.textContent = formatMarketNumber(high);
     marketLow.textContent = formatMarketNumber(low);
     marketDate.textContent = formatMarketDate(payload.date);
-    renderKChart(createCandles(rows));
-    marketNote.textContent = '來源：臺灣證券交易所每 5 秒指數統計。頁面約每 60 秒更新一次。';
+    marketNote.textContent = '來源：臺灣證券交易所每 5 秒指數統計。頁面每 5 秒嘗試更新一次。';
   } catch (error) {
     marketIndex.textContent = '暫時無法取得';
     marketChange.textContent = '--';
@@ -251,11 +143,60 @@ async function loadMarketInfo() {
     marketHigh.textContent = '--';
     marketLow.textContent = '--';
     marketDate.textContent = '--';
-    marketKChart.innerHTML = '';
-    chartRange.textContent = '--';
-    marketNote.textContent = '大盤資料讀取失敗，請稍後重新整理。';
+    marketNote.textContent = '台股資料讀取失敗，請稍後重新整理。';
   }
 }
+
+async function loadUsMarketInfo() {
+  const lookup = Object.fromEntries(usIndices.map((item) => [item.symbol, item]));
+
+  try {
+    const response = await fetch(`/api/us-market?_=${Date.now()}`, { cache: 'no-store' });
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}`);
+    }
+
+    const payload = await response.json();
+    const quotes = Array.isArray(payload.quotes) ? payload.quotes : [];
+    const seen = new Set();
+
+    quotes.forEach((quote) => {
+      const item = lookup[quote.symbol];
+      if (!item) {
+        return;
+      }
+
+      const valueElement = document.querySelector(`#${item.valueId}`);
+      const changeElement = document.querySelector(`#${item.changeId}`);
+      valueElement.textContent = formatMarketNumber(quote.price);
+      setChangeText(changeElement, quote.change, quote.percent);
+      seen.add(item.symbol);
+    });
+
+    usIndices.forEach((item) => {
+      if (seen.has(item.symbol)) {
+        return;
+      }
+      document.querySelector(`#${item.valueId}`).textContent = '暫時無法取得';
+      const changeElement = document.querySelector(`#${item.changeId}`);
+      changeElement.textContent = '--';
+      changeElement.dataset.direction = 'flat';
+    });
+
+    usMarketNote.textContent = seen.size > 0
+      ? '來源：Yahoo Finance。頁面每 5 秒嘗試更新一次；實際更新頻率依資料來源而定。'
+      : '美股資料目前無法讀取，請稍後重新整理。';
+  } catch (error) {
+    usIndices.forEach((item) => {
+      document.querySelector(`#${item.valueId}`).textContent = '暫時無法取得';
+      const changeElement = document.querySelector(`#${item.changeId}`);
+      changeElement.textContent = '--';
+      changeElement.dataset.direction = 'flat';
+    });
+    usMarketNote.textContent = '美股資料目前無法讀取，請稍後重新整理。';
+  }
+}
+
 function showHome() {
   homePanel.hidden = false;
   haoZone.hidden = true;
@@ -328,8 +269,10 @@ setUpdateDate();
 updateLiveTime();
 setInterval(updateLiveTime, 1000);
 renderGallery();
-loadMarketInfo();
-setInterval(loadMarketInfo, 60000);
+loadTaiwanMarketInfo();
+loadUsMarketInfo();
+setInterval(loadTaiwanMarketInfo, 5000);
+setInterval(loadUsMarketInfo, 5000);
 
 const hashDate = decodeURIComponent(location.hash.replace('#', ''));
 const initial = items.find((item) => item.date === hashDate);
@@ -341,5 +284,4 @@ if (initial) {
 } else {
   showHome();
 }
-
 
