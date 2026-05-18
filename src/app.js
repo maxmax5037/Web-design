@@ -34,6 +34,8 @@ const marketHigh = document.querySelector('#marketHigh');
 const marketLow = document.querySelector('#marketLow');
 const marketDate = document.querySelector('#marketDate');
 const marketNote = document.querySelector('#marketNote');
+const marketKChart = document.querySelector('#marketKChart');
+const chartRange = document.querySelector('#chartRange');
 
 const imagePath = (file) => `./public/uploads/images/${encodeURIComponent(file)}`;
 const coverImage = './public/uploads/images/cover.svg';
@@ -89,6 +91,122 @@ function formatMarketDate(value) {
   return `${value.slice(0, 4)}/${value.slice(4, 6)}/${value.slice(6, 8)}`;
 }
 
+
+function createCandles(rows) {
+  const buckets = new Map();
+
+  rows.forEach((row) => {
+    const [time, rawIndex] = row;
+    const price = parseMarketNumber(rawIndex);
+    if (!Number.isFinite(price) || !time) {
+      return;
+    }
+
+    const [hour, minute] = time.split(':').map(Number);
+    const bucketMinute = Math.floor(minute / 5) * 5;
+    const key = `${String(hour).padStart(2, '0')}:${String(bucketMinute).padStart(2, '0')}`;
+
+    if (!buckets.has(key)) {
+      buckets.set(key, {
+        time: key,
+        open: price,
+        high: price,
+        low: price,
+        close: price
+      });
+      return;
+    }
+
+    const candle = buckets.get(key);
+    candle.high = Math.max(candle.high, price);
+    candle.low = Math.min(candle.low, price);
+    candle.close = price;
+  });
+
+  return Array.from(buckets.values());
+}
+
+function renderKChart(candles) {
+  marketKChart.innerHTML = '';
+
+  if (!candles.length) {
+    chartRange.textContent = '--';
+    return;
+  }
+
+  const width = 720;
+  const height = 260;
+  const pad = { top: 20, right: 54, bottom: 30, left: 14 };
+  const plotWidth = width - pad.left - pad.right;
+  const plotHeight = height - pad.top - pad.bottom;
+  const lows = candles.map((candle) => candle.low);
+  const highs = candles.map((candle) => candle.high);
+  const min = Math.min(...lows);
+  const max = Math.max(...highs);
+  const range = max - min || 1;
+  const step = plotWidth / candles.length;
+  const bodyWidth = Math.max(3, Math.min(9, step * 0.55));
+  const ns = 'http://www.w3.org/2000/svg';
+
+  function y(value) {
+    return pad.top + ((max - value) / range) * plotHeight;
+  }
+
+  function add(tag, attrs) {
+    const element = document.createElementNS(ns, tag);
+    Object.entries(attrs).forEach(([key, value]) => element.setAttribute(key, value));
+    marketKChart.appendChild(element);
+    return element;
+  }
+
+  [min, (min + max) / 2, max].forEach((value) => {
+    const yy = y(value);
+    add('line', {
+      x1: pad.left,
+      y1: yy,
+      x2: width - pad.right,
+      y2: yy,
+      class: 'chart-grid-line'
+    });
+    add('text', {
+      x: width - pad.right + 8,
+      y: yy + 4,
+      class: 'chart-axis-label'
+    }).textContent = formatMarketNumber(value);
+  });
+
+  candles.forEach((candle, index) => {
+    const x = pad.left + index * step + step / 2;
+    const up = candle.close >= candle.open;
+    const colorClass = up ? 'candle-up' : 'candle-down';
+    const highY = y(candle.high);
+    const lowY = y(candle.low);
+    const openY = y(candle.open);
+    const closeY = y(candle.close);
+    const bodyTop = Math.min(openY, closeY);
+    const bodyHeight = Math.max(2, Math.abs(closeY - openY));
+
+    add('line', {
+      x1: x,
+      y1: highY,
+      x2: x,
+      y2: lowY,
+      class: `candle-wick ${colorClass}`
+    });
+    add('rect', {
+      x: x - bodyWidth / 2,
+      y: bodyTop,
+      width: bodyWidth,
+      height: bodyHeight,
+      rx: 1,
+      class: `candle-body ${colorClass}`
+    });
+  });
+
+  const first = candles[0].time;
+  const last = candles[candles.length - 1].time;
+  chartRange.textContent = `${first} - ${last}`;
+}
 async function loadMarketInfo() {
   const endpoint = 'https://www.twse.com.tw/rwd/zh/TAIEX/MI_5MINS_INDEX?response=json';
 
@@ -123,6 +241,7 @@ async function loadMarketInfo() {
     marketHigh.textContent = formatMarketNumber(high);
     marketLow.textContent = formatMarketNumber(low);
     marketDate.textContent = formatMarketDate(payload.date);
+    renderKChart(createCandles(rows));
     marketNote.textContent = '來源：臺灣證券交易所每 5 秒指數統計。頁面約每 60 秒更新一次。';
   } catch (error) {
     marketIndex.textContent = '暫時無法取得';
@@ -132,6 +251,8 @@ async function loadMarketInfo() {
     marketHigh.textContent = '--';
     marketLow.textContent = '--';
     marketDate.textContent = '--';
+    marketKChart.innerHTML = '';
+    chartRange.textContent = '--';
     marketNote.textContent = '大盤資料讀取失敗，請稍後重新整理。';
   }
 }
@@ -220,4 +341,5 @@ if (initial) {
 } else {
   showHome();
 }
+
 
