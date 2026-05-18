@@ -43,6 +43,12 @@ const marketHigh = document.querySelector('#marketHigh');
 const marketLow = document.querySelector('#marketLow');
 const marketDate = document.querySelector('#marketDate');
 const marketNote = document.querySelector('#marketNote');
+const nightMarketName = document.querySelector('#nightMarketName');
+const nightMarketIndex = document.querySelector('#nightMarketIndex');
+const nightMarketChange = document.querySelector('#nightMarketChange');
+const nightMarketVolume = document.querySelector('#nightMarketVolume');
+const nightMarketTime = document.querySelector('#nightMarketTime');
+const nightMarketNote = document.querySelector('#nightMarketNote');
 const usMarketNote = document.querySelector('#usMarketNote');
 
 const imagePath = (file) => `./public/uploads/images/${encodeURIComponent(file)}`;
@@ -312,6 +318,14 @@ function isTaiwanMarketRefreshTime(time = getTaipeiNow()) {
   return isWeekdayTaipei(time) && minutes >= (8 * 60 + 45) && minutes <= (13 * 60 + 45);
 }
 
+function isTaiwanNightMarketRefreshTime(time = getTaipeiNow()) {
+  const day = weekdayIndex(time);
+  const minutes = minutesSinceMidnight(time);
+  const eveningSession = day >= 1 && day <= 5 && minutes >= (14 * 60 + 45);
+  const overnightSession = day >= 2 && day <= 6 && minutes <= (5 * 60 + 15);
+  return eveningSession || overnightSession;
+}
+
 function isUsMarketRefreshTime(time = getTaipeiNow()) {
   const day = weekdayIndex(time);
   const minutes = minutesSinceMidnight(time);
@@ -323,6 +337,10 @@ function isUsMarketRefreshTime(time = getTaipeiNow()) {
 function refreshMarketsBySchedule() {
   if (isTaiwanMarketRefreshTime()) {
     loadTaiwanMarketInfo();
+  }
+
+  if (isTaiwanNightMarketRefreshTime()) {
+    loadTaiwanNightMarketInfo();
   }
 
   if (isUsMarketRefreshTime()) {
@@ -373,6 +391,36 @@ async function loadTaiwanMarketInfo() {
   }
 }
 
+async function loadTaiwanNightMarketInfo() {
+  try {
+    const response = await fetch(`/api/tw-night-market?_=${Date.now()}`, { cache: 'no-store' });
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}`);
+    }
+
+    const payload = await response.json();
+    const quote = payload.quote;
+    if (!quote || typeof quote.price !== 'number') {
+      throw new Error('missing night market quote');
+    }
+
+    nightMarketName.textContent = quote.name || '台指期近一';
+    nightMarketIndex.textContent = formatMarketNumber(quote.price);
+    setChangeText(nightMarketChange, quote.change || 0, quote.percent || 0);
+    nightMarketVolume.textContent = typeof quote.volume === 'number'
+      ? new Intl.NumberFormat('zh-TW').format(quote.volume)
+      : '--';
+    nightMarketTime.textContent = quote.time || '--';
+    nightMarketNote.textContent = '來源：Yahoo 股市。頁面載入先抓一次，台股夜盤平日 14:45-隔日 05:15 每 5 秒更新。';
+  } catch (error) {
+    nightMarketIndex.textContent = '暫時無法取得';
+    nightMarketChange.textContent = '--';
+    nightMarketChange.dataset.direction = 'flat';
+    nightMarketVolume.textContent = '--';
+    nightMarketTime.textContent = '--';
+    nightMarketNote.textContent = '台股夜盤資料讀取失敗，請稍後重新整理。';
+  }
+}
 async function loadUsMarketInfo() {
   const lookup = Object.fromEntries(usIndices.map((item) => [item.symbol, item]));
 
@@ -533,9 +581,11 @@ setUpdateDate();
 updateLiveTime();
 setInterval(updateLiveTime, 1000);
 loadTaiwanMarketInfo();
+loadTaiwanNightMarketInfo();
 loadUsMarketInfo();
 setInterval(refreshMarketsBySchedule, 5000);
 boot();
+
 
 
 

@@ -55,6 +55,30 @@
                 <dd id="marketDate">--</dd>
               </div>
             </dl>
+            <section class="night-market" aria-label="台股夜盤">
+              <div class="night-market-head">
+                <div>
+                  <span class="market-label">台股夜盤</span>
+                  <strong id="nightMarketName">台指期近一</strong>
+                </div>
+                <span class="market-source">Yahoo</span>
+              </div>
+              <div class="night-market-main">
+                <strong id="nightMarketIndex">讀取中</strong>
+                <span class="market-change" id="nightMarketChange">--</span>
+              </div>
+              <dl class="night-market-grid">
+                <div>
+                  <dt>成交量</dt>
+                  <dd id="nightMarketVolume">--</dd>
+                </div>
+                <div>
+                  <dt>資料時間</dt>
+                  <dd id="nightMarketTime">--</dd>
+                </div>
+              </dl>
+              <p class="market-note" id="nightMarketNote">來源：Yahoo 股市。頁面載入先抓一次，台股夜盤平日 14:45-隔日 05:15 每 5 秒更新。</p>
+            </section>
             <p class="market-note" id="marketNote">來源：臺灣證券交易所。頁面載入先抓一次，台股平日 08:45-13:45 每 5 秒更新。</p>
           </article>
 
@@ -125,6 +149,7 @@
     <script src="./src/app.js"></script>
   </body>
 </html>
+
 
 
 
