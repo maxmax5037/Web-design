@@ -29,19 +29,38 @@ function parseNumber(value) {
   return Number.isFinite(parsed) ? parsed : null;
 }
 
-function parseTaiwanFuture(lines) {
-  const dateLine = lines.find((line) => line.startsWith('資料時間：')) || '';
+function parseRowLines(rowHtml) {
+  return toTextLines(rowHtml).filter((line) => line !== '|');
+}
+
+function findTaiwanFutureRow(html) {
+  const rowPattern = /<li class="List\(n\)">([\s\S]*?href="https:\/\/tw\.stock\.yahoo\.com\/future\/WTX(?:&amp;|&)"[\s\S]*?)<\/li>/;
+  const match = html.match(rowPattern);
+  if (!match) {
+    throw new Error('missing WTX& quote row');
+  }
+  return match[1];
+}
+
+function parseTaiwanFuture(html) {
+  const rowHtml = findTaiwanFutureRow(html);
+  const isDown = rowHtml.includes('C($c-trend-down)');
+  const direction = isDown ? -1 : 1;
+  const lines = parseRowLines(rowHtml);
+  const dateLine = toTextLines(html).find((line) => line.startsWith('資料時間：')) || '';
   const date = dateLine.replace('資料時間：', '').trim() || null;
   const start = lines.findIndex((line) => line === '台指期近一');
 
   if (start === -1) {
-    throw new Error('missing 台指期近一 row');
+    throw new Error('missing 台指期近一 row label');
   }
 
   const values = lines.slice(start, start + 16);
   const price = parseNumber(values[4]);
-  const change = parseNumber(values[5]);
-  const percent = parseNumber(values[6]);
+  const changeValue = parseNumber(values[5]);
+  const percentValue = parseNumber(values[6]);
+  const change = changeValue === null ? null : changeValue * direction;
+  const percent = percentValue === null ? null : percentValue * direction;
   const volume = parseNumber(values[7]);
   const open = parseNumber(values[8]);
   const high = parseNumber(values[9]);
@@ -84,7 +103,15 @@ export async function onRequestGet() {
   }
 
   const html = await response.text();
-  const quote = parseTaiwanFuture(toTextLines(html));
+  let quote;
+  try {
+    quote = parseTaiwanFuture(html);
+  } catch (error) {
+    return Response.json(
+      { error: error?.message || 'Yahoo futures parse failed' },
+      { status: 502, headers: { 'Cache-Control': 'no-store', 'Access-Control-Allow-Origin': '*' } }
+    );
+  }
 
   return Response.json(
     {
@@ -99,5 +126,9 @@ export async function onRequestGet() {
     }
   );
 }
+
+
+
+
 
 
