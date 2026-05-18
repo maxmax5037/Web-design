@@ -1,0 +1,17 @@
+﻿# System files
+.DS_Store
+Thumbs.db
+
+# Dependencies / build outputs
+node_modules/
+dist/
+build/
+.cache/
+
+# Local server / logs
+*.log
+server.out.log
+server.err.log
+
+# Generated deploy packages
+exports/*.zip

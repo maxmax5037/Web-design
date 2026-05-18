@@ -1,0 +1,38 @@
+﻿<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>皓哥開示摘要圖</title>
+    <link rel="stylesheet" href="./src/styles.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <div>
+        <p class="eyebrow">Daily Notes Gallery</p>
+        <h1>皓哥開示摘要圖</h1>
+      </div>
+      <p class="header-meta">點選日期查看對應圖片</p>
+    </header>
+
+    <main class="layout">
+      <section class="gallery" aria-label="摘要圖列表" id="gallery"></section>
+
+      <section class="viewer" aria-label="圖片預覽">
+        <div class="viewer-header">
+          <div>
+            <p class="eyebrow">Preview</p>
+            <h2 id="viewerTitle">選擇一張摘要圖</h2>
+          </div>
+          <a class="open-link" id="openImage" href="#" target="_blank" rel="noreferrer">開啟原圖</a>
+        </div>
+        <div class="image-frame">
+          <img id="mainImage" alt="摘要圖預覽" />
+          <p class="empty-state" id="emptyState">從左側選一個日期開始查看。</p>
+        </div>
+      </section>
+    </main>
+
+    <script src="./src/app.js"></script>
+  </body>
+</html>
