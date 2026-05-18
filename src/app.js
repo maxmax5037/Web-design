@@ -27,7 +27,9 @@ let haoNotes = [];
 
 const homePanel = document.querySelector('#homePanel');
 const haoZone = document.querySelector('#haoZone');
+const mengZone = document.querySelector('#mengZone');
 const haoZoneButton = document.querySelector('#haoZoneButton');
+const mengZoneButton = document.querySelector('#mengZoneButton');
 const gallery = document.querySelector('#gallery');
 const viewerTitle = document.querySelector('#viewerTitle');
 const updateDate = document.querySelector('#updateDate');
@@ -486,6 +488,7 @@ async function loadHaoNotes() {
 function showHome() {
   homePanel.hidden = false;
   haoZone.hidden = true;
+  mengZone.hidden = true;
   siteEyebrow.textContent = 'Max Test Area';
   siteTitle.textContent = 'Max測試專區';
   headerHomeButton.hidden = true;
@@ -495,11 +498,22 @@ function showHome() {
 function showHaoZone() {
   homePanel.hidden = true;
   haoZone.hidden = false;
+  mengZone.hidden = true;
   siteEyebrow.textContent = 'Hao Notes';
   siteTitle.textContent = '皓哥開示摘要圖';
   headerHomeButton.hidden = false;
   showNotePlaceholder();
   history.replaceState(null, '', '#hao');
+}
+
+function showMengZone() {
+  homePanel.hidden = true;
+  haoZone.hidden = true;
+  mengZone.hidden = false;
+  siteEyebrow.textContent = 'Meng Jie Collection';
+  siteTitle.textContent = '孟潔的壓箱寶';
+  headerHomeButton.hidden = false;
+  history.replaceState(null, '', '#mengjie');
 }
 
 function showNotePlaceholder() {
@@ -514,6 +528,7 @@ function showNotePlaceholder() {
 function selectItem(item) {
   homePanel.hidden = true;
   haoZone.hidden = false;
+  mengZone.hidden = true;
   siteEyebrow.textContent = 'Hao Notes';
   siteTitle.textContent = '皓哥開示摘要圖';
   headerHomeButton.hidden = false;
@@ -569,12 +584,15 @@ async function boot() {
     selectItem(initial);
   } else if (hashDate === 'hao') {
     showHaoZone();
+  } else if (hashDate === 'mengjie') {
+    showMengZone();
   } else {
     showHome();
   }
 }
 
 haoZoneButton.addEventListener('click', showHaoZone);
+mengZoneButton.addEventListener('click', showMengZone);
 headerHomeButton.addEventListener('click', showHome);
 
 setUpdateDate();
@@ -585,6 +603,9 @@ loadTaiwanNightMarketInfo();
 loadUsMarketInfo();
 setInterval(refreshMarketsBySchedule, 5000);
 boot();
+
+
+
 
 
 
