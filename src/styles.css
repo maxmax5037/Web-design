@@ -56,6 +56,20 @@ h2 {
   line-height: 1.35;
 }
 
+
+.header-status {
+  display: grid;
+  gap: 5px;
+  justify-items: end;
+  margin-bottom: 5px;
+}
+
+.live-time {
+  margin: 0;
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 700;
+}
 .header-meta {
   margin: 0 0 5px;
   color: var(--muted);
@@ -194,7 +208,8 @@ h2 {
 
 @media (max-width: 860px) {
   .site-header,
-  .viewer-header {
+  .viewer-header,
+  .header-status {
     align-items: start;
     flex-direction: column;
   }
@@ -211,4 +226,5 @@ h2 {
     min-height: 360px;
   }
 }
+
 

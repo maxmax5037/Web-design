@@ -22,6 +22,7 @@ const viewerTitle = document.querySelector('#viewerTitle');
 const openImage = document.querySelector('#openImage');
 const emptyState = document.querySelector('#emptyState');
 const updateDate = document.querySelector('#updateDate');
+const liveTime = document.querySelector('#liveTime');
 const homeButton = document.querySelector('#homeButton');
 
 const imagePath = (file) => `./public/uploads/images/${encodeURIComponent(file)}`;
@@ -35,6 +36,26 @@ function formatToday() {
   return `${year}${month}${day}`;
 }
 
+
+function formatTaipeiTime() {
+  const parts = new Intl.DateTimeFormat('zh-TW', {
+    timeZone: 'Asia/Taipei',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hour12: false
+  }).formatToParts(new Date());
+
+  const values = Object.fromEntries(parts.map((part) => [part.type, part.value]));
+  return `${values.year}/${values.month}/${values.day} ${values.hour}:${values.minute}:${values.second}`;
+}
+
+function updateLiveTime() {
+  liveTime.textContent = `現在時間 ${formatTaipeiTime()}`;
+}
 function setUpdateDate() {
   updateDate.textContent = `目前更新到 ${formatToday()}`;
 }
@@ -98,6 +119,8 @@ function renderGallery() {
 homeButton.addEventListener('click', returnHome);
 
 setUpdateDate();
+updateLiveTime();
+setInterval(updateLiveTime, 1000);
 renderGallery();
 
 const hashDate = decodeURIComponent(location.hash.replace('#', ''));
@@ -108,5 +131,6 @@ if (initial) {
 } else {
   showCover();
 }
+
 
 
