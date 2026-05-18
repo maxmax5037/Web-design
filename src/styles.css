@@ -403,6 +403,105 @@ h2 {
   background: var(--accent-soft);
 }
 
+
+.note-reader {
+  min-height: 520px;
+  padding: 28px;
+  background: #f9fbfd;
+}
+
+.note-empty {
+  min-height: 360px;
+  display: grid;
+  place-items: center;
+  color: var(--muted);
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.note-content {
+  max-width: 860px;
+  margin: 0 auto;
+  color: var(--text);
+  line-height: 1.75;
+}
+
+.note-content h1 {
+  font-size: 30px;
+  margin-bottom: 22px;
+}
+
+.note-content h2 {
+  border-left: 5px solid var(--accent);
+  font-size: 22px;
+  margin: 30px 0 14px;
+  padding-left: 12px;
+}
+
+.note-content h3 {
+  font-size: 18px;
+  margin: 22px 0 8px;
+}
+
+.note-content p {
+  margin: 10px 0;
+}
+
+.note-content ul {
+  display: grid;
+  gap: 8px;
+  margin: 10px 0 18px;
+  padding-left: 22px;
+}
+
+.note-content li {
+  padding-left: 2px;
+}
+
+.note-content blockquote {
+  border-left: 4px solid var(--line);
+  color: var(--muted);
+  margin: 0 0 20px;
+  padding: 10px 16px;
+  background: #f8fafc;
+}
+
+.note-content code {
+  border-radius: 5px;
+  background: #eef3f7;
+  padding: 2px 6px;
+}
+
+.tag {
+  display: inline-block;
+  border-radius: 999px;
+  color: #1f6feb;
+  background: var(--accent-soft);
+  font-weight: 800;
+  padding: 1px 8px;
+}
+
+.original-image {
+  max-width: 860px;
+  margin: 28px auto 0;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+  padding: 14px;
+}
+
+.original-image summary {
+  color: var(--accent);
+  cursor: pointer;
+  font-weight: 800;
+}
+
+.original-image img {
+  width: 100%;
+  margin-top: 14px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+}
 .image-frame {
   position: relative;
   min-height: 520px;
@@ -426,9 +525,6 @@ h2 {
 }
 
 [hidden] {
-  display: none !important;
-}
-
 @media (max-width: 860px) {
   .site-header,
   .viewer-header,
@@ -445,14 +541,6 @@ h2 {
     justify-items: start;
   }
 
-  .layout {
-    grid-template-columns: 1fr;
-  }
-
-  .gallery {
-    grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
-  }
-
   .market-row {
     grid-template-columns: 1fr;
   }
@@ -462,16 +550,15 @@ h2 {
     grid-template-columns: 1fr;
   }
 
-  .image-frame {
-    min-height: 360px;
+  .layout {
+    grid-template-columns: 1fr;
+  }
+
+  .gallery {
+    grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  }
+
+  .note-reader {
+    padding: 20px;
   }
 }
-
-
-
-
-
-
-
-
-

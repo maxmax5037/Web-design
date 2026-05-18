@@ -1,16 +1,16 @@
 ﻿const items = [
   {
-    title: '2026-05-14 皓哥開示摘要圖',
+    title: '2026-05-14 皓哥開示摘要',
     file: '2026-05-14_皓哥開示摘要圖.png',
     date: '2026-05-14'
   },
   {
-    title: '2026-05-15 皓哥開示摘要圖',
+    title: '2026-05-15 皓哥開示摘要',
     file: '2026-05-15_皓哥開示摘要圖.png',
     date: '2026-05-15'
   },
   {
-    title: '2026-05-18 皓哥開示摘要圖',
+    title: '2026-05-18 皓哥開示摘要',
     file: '2026-05-18_皓哥開示摘要圖.png',
     date: '2026-05-18'
   }
@@ -23,18 +23,19 @@ const usIndices = [
   { symbol: '^SOX', valueId: 'us-sox', changeId: 'us-sox-change' }
 ];
 
+let haoNotes = [];
+
 const homePanel = document.querySelector('#homePanel');
 const haoZone = document.querySelector('#haoZone');
 const haoZoneButton = document.querySelector('#haoZoneButton');
 const gallery = document.querySelector('#gallery');
-const mainImage = document.querySelector('#mainImage');
 const viewerTitle = document.querySelector('#viewerTitle');
-const emptyState = document.querySelector('#emptyState');
 const updateDate = document.querySelector('#updateDate');
 const liveTime = document.querySelector('#liveTime');
 const siteEyebrow = document.querySelector('#siteEyebrow');
 const siteTitle = document.querySelector('#siteTitle');
 const headerHomeButton = document.querySelector('#headerHomeButton');
+const noteReader = document.querySelector('#noteReader');
 const marketIndex = document.querySelector('#marketIndex');
 const marketChange = document.querySelector('#marketChange');
 const marketTime = document.querySelector('#marketTime');
@@ -45,7 +46,6 @@ const marketNote = document.querySelector('#marketNote');
 const usMarketNote = document.querySelector('#usMarketNote');
 
 const imagePath = (file) => `./public/uploads/images/${encodeURIComponent(file)}`;
-const coverImage = './public/uploads/images/cover.svg';
 
 function formatToday() {
   const now = new Date();
@@ -102,6 +102,104 @@ function setChangeText(element, change, percent, suffix = '') {
   const sign = change > 0 ? '+' : '';
   element.textContent = `${sign}${formatMarketNumber(change)} (${sign}${percent.toFixed(2)}%)${suffix}`;
   element.dataset.direction = direction;
+}
+
+function escapeHtml(value) {
+  return value
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
+function inlineMarkdown(value) {
+  return escapeHtml(value)
+    .replace(/`([^`]+)`/g, '<code>$1</code>')
+    .replace(/#([\p{L}\p{N}_-]+)/gu, '<span class="tag">#$1</span>');
+}
+
+function markdownToHtml(markdown) {
+  const lines = markdown.replace(/\r\n/g, '\n').split('\n');
+  const html = [];
+  let inList = false;
+  let inQuote = false;
+
+  function closeList() {
+    if (inList) {
+      html.push('</ul>');
+      inList = false;
+    }
+  }
+
+  function closeQuote() {
+    if (inQuote) {
+      html.push('</blockquote>');
+      inQuote = false;
+    }
+  }
+
+  lines.forEach((line) => {
+    const trimmed = line.trim();
+
+    if (!trimmed) {
+      closeList();
+      closeQuote();
+      return;
+    }
+
+    if (trimmed.startsWith('>')) {
+      closeList();
+      if (!inQuote) {
+        html.push('<blockquote>');
+        inQuote = true;
+      }
+      html.push(`<p>${inlineMarkdown(trimmed.replace(/^>\s?/, ''))}</p>`);
+      return;
+    }
+
+    closeQuote();
+
+    if (trimmed.startsWith('### ')) {
+      closeList();
+      html.push(`<h3>${inlineMarkdown(trimmed.slice(4))}</h3>`);
+      return;
+    }
+
+    if (trimmed.startsWith('## ')) {
+      closeList();
+      html.push(`<h2>${inlineMarkdown(trimmed.slice(3))}</h2>`);
+      return;
+    }
+
+    if (trimmed.startsWith('# ')) {
+      closeList();
+      html.push(`<h1>${inlineMarkdown(trimmed.slice(2))}</h1>`);
+      return;
+    }
+
+    if (/^-\s+/.test(trimmed)) {
+      if (!inList) {
+        html.push('<ul>');
+        inList = true;
+      }
+      html.push(`<li>${inlineMarkdown(trimmed.replace(/^-\s+/, ''))}</li>`);
+      return;
+    }
+
+    if (/^\d+\.\s+/.test(trimmed)) {
+      closeList();
+      html.push(`<h3>${inlineMarkdown(trimmed.replace(/^\d+\.\s+/, ''))}</h3>`);
+      return;
+    }
+
+    closeList();
+    html.push(`<p>${inlineMarkdown(trimmed)}</p>`);
+  });
+
+  closeList();
+  closeQuote();
+  return html.join('');
 }
 
 async function loadTaiwanMarketInfo() {
@@ -198,6 +296,18 @@ async function loadUsMarketInfo() {
   }
 }
 
+async function loadHaoNotes() {
+  try {
+    const response = await fetch('./public/data/hao-notes.json', { cache: 'no-store' });
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}`);
+    }
+    haoNotes = await response.json();
+  } catch (error) {
+    haoNotes = [];
+  }
+}
+
 function showHome() {
   homePanel.hidden = false;
   haoZone.hidden = true;
@@ -213,16 +323,13 @@ function showHaoZone() {
   siteEyebrow.textContent = 'Hao Notes';
   siteTitle.textContent = '皓哥開示摘要圖';
   headerHomeButton.hidden = false;
-  showCover();
+  showNotePlaceholder();
   history.replaceState(null, '', '#hao');
 }
 
-function showCover() {
-  mainImage.src = coverImage;
-  mainImage.alt = '皓哥專區封面';
+function showNotePlaceholder() {
   viewerTitle.textContent = '皓哥開示摘要圖';
-  emptyState.hidden = true;
-  mainImage.hidden = false;
+  noteReader.innerHTML = '<div class="note-empty">從左側選一個日期查看網頁版摘要。</div>';
 
   document.querySelectorAll('.gallery-card').forEach((card) => {
     card.classList.remove('is-active');
@@ -236,12 +343,20 @@ function selectItem(item) {
   siteTitle.textContent = '皓哥開示摘要圖';
   headerHomeButton.hidden = false;
 
-  const src = imagePath(item.file);
-  mainImage.src = src;
-  mainImage.alt = item.title;
+  const note = haoNotes.find((entry) => entry.date === item.date);
   viewerTitle.textContent = item.title;
-  emptyState.hidden = true;
-  mainImage.hidden = false;
+
+  if (!note) {
+    noteReader.innerHTML = '<div class="note-empty">這一天的文字摘要尚未載入。</div>';
+  } else {
+    noteReader.innerHTML = `
+      <div class="note-content">${markdownToHtml(note.markdown)}</div>
+      <details class="original-image">
+        <summary>查看原圖備份</summary>
+        <img src="${imagePath(note.image)}" alt="${escapeHtml(note.title)} 原圖" />
+      </details>
+    `;
+  }
 
   document.querySelectorAll('.gallery-card').forEach((card) => {
     card.classList.toggle('is-active', card.dataset.file === item.file);
@@ -260,12 +375,28 @@ function renderGallery() {
     button.dataset.file = item.file;
     button.innerHTML = `
       <span class="date">${item.date}</span>
-      <span class="title">${item.title.replace(item.date, '').trim()}</span>
-      <span class="hint">查看圖片</span>
+      <span class="title">皓哥開示摘要</span>
+      <span class="hint">閱讀網頁版</span>
     `;
     button.addEventListener('click', () => selectItem(item));
     gallery.appendChild(button);
   });
+}
+
+async function boot() {
+  await loadHaoNotes();
+  renderGallery();
+
+  const hashDate = decodeURIComponent(location.hash.replace('#', ''));
+  const initial = items.find((item) => item.date === hashDate);
+
+  if (initial) {
+    selectItem(initial);
+  } else if (hashDate === 'hao') {
+    showHaoZone();
+  } else {
+    showHome();
+  }
 }
 
 haoZoneButton.addEventListener('click', showHaoZone);
@@ -274,22 +405,8 @@ headerHomeButton.addEventListener('click', showHome);
 setUpdateDate();
 updateLiveTime();
 setInterval(updateLiveTime, 1000);
-renderGallery();
 loadTaiwanMarketInfo();
 loadUsMarketInfo();
 setInterval(loadTaiwanMarketInfo, 5000);
 setInterval(loadUsMarketInfo, 5000);
-
-const hashDate = decodeURIComponent(location.hash.replace('#', ''));
-const initial = items.find((item) => item.date === hashDate);
-
-if (initial) {
-  selectItem(initial);
-} else if (hashDate === 'hao') {
-  showHaoZone();
-} else {
-  showHome();
-}
-
-
-
+boot();
