@@ -559,6 +559,7 @@ function showHome() {
   homePanel.hidden = false;
   haoZone.hidden = true;
   mengZone.hidden = true;
+  document.body.classList.remove('is-meng-zone');
   siteEyebrow.textContent = 'Max Test Area';
   siteTitle.textContent = 'Max測試專區';
   headerHomeButton.hidden = true;
@@ -569,6 +570,7 @@ function showHaoZone() {
   homePanel.hidden = true;
   haoZone.hidden = false;
   mengZone.hidden = true;
+  document.body.classList.remove('is-meng-zone');
   siteEyebrow.textContent = 'Hao Notes';
   siteTitle.textContent = '皓哥開示摘要圖';
   headerHomeButton.hidden = false;
@@ -580,6 +582,7 @@ function showMengZone() {
   homePanel.hidden = true;
   haoZone.hidden = true;
   mengZone.hidden = false;
+  document.body.classList.add('is-meng-zone');
   siteEyebrow.textContent = 'Meng Jie Collection';
   siteTitle.textContent = '孟潔的壓箱寶';
   headerHomeButton.hidden = false;
@@ -606,6 +609,7 @@ function selectItem(item) {
   homePanel.hidden = true;
   haoZone.hidden = false;
   mengZone.hidden = true;
+  document.body.classList.remove('is-meng-zone');
   siteEyebrow.textContent = 'Hao Notes';
   siteTitle.textContent = '皓哥開示摘要圖';
   headerHomeButton.hidden = false;
@@ -681,6 +685,7 @@ loadUsMarketInfo();
 setInterval(refreshMarketsBySchedule, 5000);
 setInterval(refreshFundsBySchedule, 5000);
 boot();
+
 
 
 
