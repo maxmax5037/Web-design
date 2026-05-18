@@ -24,6 +24,8 @@ const usIndices = [
 ];
 
 let haoNotes = [];
+let taiwanMarketTimer = null;
+let usMarketTimer = null;
 
 const homePanel = document.querySelector('#homePanel');
 const haoZone = document.querySelector('#haoZone');
@@ -77,6 +79,97 @@ function updateLiveTime() {
 
 function setUpdateDate() {
   updateDate.textContent = `${formatToday()}已更新`;
+}
+
+function getTaipeiParts() {
+  const parts = new Intl.DateTimeFormat('en-US', {
+    timeZone: 'Asia/Taipei',
+    weekday: 'short',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false,
+    hourCycle: 'h23'
+  }).formatToParts(new Date());
+  const values = Object.fromEntries(parts.map((part) => [part.type, part.value]));
+  const weekdayMap = {
+    Sun: 0,
+    Mon: 1,
+    Tue: 2,
+    Wed: 3,
+    Thu: 4,
+    Fri: 5,
+    Sat: 6
+  };
+
+  return {
+    day: weekdayMap[values.weekday],
+    minutes: Number(values.hour) * 60 + Number(values.minute)
+  };
+}
+
+function isWeekday(day) {
+  return day >= 1 && day <= 5;
+}
+
+function isTaiwanMarketUpdateTime() {
+  const { day, minutes } = getTaipeiParts();
+  return isWeekday(day) && minutes >= 8 * 60 + 45 && minutes <= 13 * 60 + 45;
+}
+
+function isUsMarketUpdateTime() {
+  const { day, minutes } = getTaipeiParts();
+  const eveningSession = isWeekday(day) && minutes >= 21 * 60 + 15;
+  const afterMidnightSession = day >= 2 && day <= 6 && minutes <= 3 * 60 + 45;
+  return eveningSession || afterMidnightSession;
+}
+
+function showTaiwanMarketOffHours() {
+  marketIndex.textContent = '非更新時段';
+  marketChange.textContent = '--';
+  marketChange.dataset.direction = 'flat';
+  marketTime.textContent = '--';
+  marketHigh.textContent = '--';
+  marketLow.textContent = '--';
+  marketDate.textContent = '--';
+  marketNote.textContent = '台股更新時段：平日 08:45-13:45。其他時間不更新。';
+}
+
+function showUsMarketOffHours() {
+  usIndices.forEach((item) => {
+    document.querySelector(`#${item.valueId}`).textContent = '非更新時段';
+    const changeElement = document.querySelector(`#${item.changeId}`);
+    changeElement.textContent = '--';
+    changeElement.dataset.direction = 'flat';
+  });
+  usMarketNote.textContent = '美股更新時段：平日 21:15-隔日 03:45。其他時間不更新。';
+}
+
+function manageMarketPolling() {
+  if (isTaiwanMarketUpdateTime()) {
+    if (!taiwanMarketTimer) {
+      loadTaiwanMarketInfo();
+      taiwanMarketTimer = setInterval(loadTaiwanMarketInfo, 5000);
+    }
+  } else {
+    if (taiwanMarketTimer) {
+      clearInterval(taiwanMarketTimer);
+      taiwanMarketTimer = null;
+    }
+    showTaiwanMarketOffHours();
+  }
+
+  if (isUsMarketUpdateTime()) {
+    if (!usMarketTimer) {
+      loadUsMarketInfo();
+      usMarketTimer = setInterval(loadUsMarketInfo, 5000);
+    }
+  } else {
+    if (usMarketTimer) {
+      clearInterval(usMarketTimer);
+      usMarketTimer = null;
+    }
+    showUsMarketOffHours();
+  }
 }
 
 function parseMarketNumber(value) {
@@ -474,9 +567,7 @@ headerHomeButton.addEventListener('click', showHome);
 setUpdateDate();
 updateLiveTime();
 setInterval(updateLiveTime, 1000);
-loadTaiwanMarketInfo();
-loadUsMarketInfo();
-setInterval(loadTaiwanMarketInfo, 5000);
-setInterval(loadUsMarketInfo, 5000);
+manageMarketPolling();
+setInterval(manageMarketPolling, 60000);
 boot();
 
