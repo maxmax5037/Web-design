@@ -271,6 +271,64 @@ function markdownToHtml(markdown) {
     </div>
   `;
 }
+
+function getTaipeiNow() {
+  const parts = new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'Asia/Taipei',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    weekday: 'short',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hour12: false
+  }).formatToParts(new Date());
+
+  const values = Object.fromEntries(parts.map((part) => [part.type, part.value]));
+  return {
+    weekday: values.weekday,
+    hour: Number(values.hour),
+    minute: Number(values.minute),
+    second: Number(values.second)
+  };
+}
+
+function minutesSinceMidnight(time) {
+  return (time.hour * 60) + time.minute + (time.second / 60);
+}
+
+function weekdayIndex(time = getTaipeiNow()) {
+  return ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].indexOf(time.weekday);
+}
+
+function isWeekdayTaipei(time = getTaipeiNow()) {
+  const day = weekdayIndex(time);
+  return day >= 1 && day <= 5;
+}
+
+function isTaiwanMarketRefreshTime(time = getTaipeiNow()) {
+  const minutes = minutesSinceMidnight(time);
+  return isWeekdayTaipei(time) && minutes >= (8 * 60 + 45) && minutes <= (13 * 60 + 45);
+}
+
+function isUsMarketRefreshTime(time = getTaipeiNow()) {
+  const day = weekdayIndex(time);
+  const minutes = minutesSinceMidnight(time);
+  const eveningSession = day >= 1 && day <= 5 && minutes >= (21 * 60 + 15);
+  const overnightSession = day >= 2 && day <= 6 && minutes <= (3 * 60 + 45);
+  return eveningSession || overnightSession;
+}
+
+function refreshMarketsBySchedule() {
+  if (isTaiwanMarketRefreshTime()) {
+    loadTaiwanMarketInfo();
+  }
+
+  if (isUsMarketRefreshTime()) {
+    loadUsMarketInfo();
+  }
+}
 async function loadTaiwanMarketInfo() {
   const endpoint = 'https://www.twse.com.tw/rwd/zh/TAIEX/MI_5MINS_INDEX?response=json';
 
@@ -302,7 +360,7 @@ async function loadTaiwanMarketInfo() {
     marketHigh.textContent = formatMarketNumber(high);
     marketLow.textContent = formatMarketNumber(low);
     marketDate.textContent = formatMarketDate(payload.date);
-    marketNote.textContent = '來源：臺灣證券交易所每 5 秒指數統計。頁面每 5 秒嘗試更新一次。';
+    marketNote.textContent = '來源：臺灣證券交易所。頁面載入先抓一次，台股平日 08:45-13:45 每 5 秒更新。';
   } catch (error) {
     marketIndex.textContent = '暫時無法取得';
     marketChange.textContent = '--';
@@ -352,7 +410,7 @@ async function loadUsMarketInfo() {
     });
 
     usMarketNote.textContent = seen.size > 0
-      ? '來源：Yahoo Finance。頁面每 5 秒嘗試更新一次；實際更新頻率依資料來源而定。'
+      ? '來源：Yahoo Finance。頁面載入先抓一次，美股平日 21:15-隔日 03:45 每 5 秒更新；實際更新頻率依資料來源而定。'
       : '美股資料目前無法讀取，請稍後重新整理。';
   } catch (error) {
     usIndices.forEach((item) => {
@@ -476,7 +534,8 @@ updateLiveTime();
 setInterval(updateLiveTime, 1000);
 loadTaiwanMarketInfo();
 loadUsMarketInfo();
-setInterval(loadTaiwanMarketInfo, 5000);
-setInterval(loadUsMarketInfo, 5000);
+setInterval(refreshMarketsBySchedule, 5000);
 boot();
+
+
 

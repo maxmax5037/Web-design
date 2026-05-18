@@ -23,6 +23,9 @@
 
     <main>
       <section class="home-panel" id="homePanel" aria-label="主頁入口">
+        <section class="home-photo" aria-label="首頁照片">
+          <img src="./public/uploads/images/home-hero.jpeg" alt="首頁照片" />
+        </section>
         <div class="market-row">
           <article class="market-card" aria-label="台股">
             <div class="market-head">
@@ -55,7 +58,7 @@
                 <dd id="marketDate">--</dd>
               </div>
             </dl>
-            <p class="market-note" id="marketNote">來源：臺灣證券交易所每 5 秒指數統計。頁面每 5 秒嘗試更新一次。</p>
+            <p class="market-note" id="marketNote">來源：臺灣證券交易所。頁面載入先抓一次，台股平日 08:45-13:45 每 5 秒更新。</p>
           </article>
 
           <article class="market-card" aria-label="美股">
@@ -88,7 +91,7 @@
                 <span class="us-index-change" id="us-sox-change">--</span>
               </div>
             </div>
-            <p class="market-note" id="usMarketNote">美股資料每 5 秒嘗試更新一次；實際更新頻率依資料來源而定。</p>
+            <p class="market-note" id="usMarketNote">來源：Yahoo Finance。頁面載入先抓一次，美股平日 21:15-隔日 03:45 每 5 秒更新；實際更新頻率依資料來源而定。</p>
           </article>
         </div>
 
@@ -119,4 +122,5 @@
     <script src="./src/app.js"></script>
   </body>
 </html>
+
 
