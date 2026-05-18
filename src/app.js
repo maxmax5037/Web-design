@@ -404,7 +404,7 @@ async function loadTaiwanNightMarketInfo() {
       throw new Error('missing night market quote');
     }
 
-    nightMarketName.textContent = quote.name || '台指期近一';
+    nightMarketName.textContent = '台指期近一';
     nightMarketIndex.textContent = formatMarketNumber(quote.price);
     setChangeText(nightMarketChange, quote.change || 0, quote.percent || 0);
     nightMarketVolume.textContent = typeof quote.volume === 'number'
@@ -585,6 +585,7 @@ loadTaiwanNightMarketInfo();
 loadUsMarketInfo();
 setInterval(refreshMarketsBySchedule, 5000);
 boot();
+
 
 
 
