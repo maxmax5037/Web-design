@@ -52,6 +52,19 @@ const nightMarketVolume = document.querySelector('#nightMarketVolume');
 const nightMarketTime = document.querySelector('#nightMarketTime');
 const nightMarketNote = document.querySelector('#nightMarketNote');
 const usMarketNote = document.querySelector('#usMarketNote');
+const fundNote = document.querySelector('#fundNote');
+const fundCards = {
+  '1205': {
+    nav: document.querySelector('#fund-1205-nav'),
+    change: document.querySelector('#fund-1205-change'),
+    date: document.querySelector('#fund-1205-date')
+  },
+  '2531': {
+    nav: document.querySelector('#fund-2531-nav'),
+    change: document.querySelector('#fund-2531-change'),
+    date: document.querySelector('#fund-2531-date')
+  }
+};
 
 const imagePath = (file) => `./public/uploads/images/${encodeURIComponent(file)}`;
 
@@ -473,6 +486,58 @@ async function loadUsMarketInfo() {
   }
 }
 
+function setPercentText(element, percent) {
+  const direction = percent > 0 ? 'up' : percent < 0 ? 'down' : 'flat';
+  const sign = percent > 0 ? '+' : '';
+  element.textContent = `${sign}${percent.toFixed(2)}%`;
+  element.dataset.direction = direction;
+}
+
+async function loadMengFunds() {
+  try {
+    const response = await fetch(`/api/meng-funds?_=${Date.now()}`, { cache: 'no-store' });
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}`);
+    }
+
+    const payload = await response.json();
+    const funds = Array.isArray(payload.funds) ? payload.funds : [];
+    const seen = new Set();
+
+    funds.forEach((fund) => {
+      const card = fundCards[fund.code];
+      if (!card) {
+        return;
+      }
+      card.nav.textContent = formatMarketNumber(fund.nav);
+      setPercentText(card.change, fund.changePercent);
+      card.date.textContent = `最新淨值日期 ${fund.date || '--'}`;
+      seen.add(fund.code);
+    });
+
+    Object.entries(fundCards).forEach(([code, card]) => {
+      if (seen.has(code)) {
+        return;
+      }
+      card.nav.textContent = '暫時無法取得';
+      card.change.textContent = '--';
+      card.change.dataset.direction = 'flat';
+      card.date.textContent = '最新淨值日期 --';
+    });
+
+    fundNote.textContent = seen.size > 0
+      ? '來源：玉山銀行基金資訊。進入專區時更新一次。'
+      : '基金資料目前無法讀取，請稍後重新整理。';
+  } catch (error) {
+    Object.values(fundCards).forEach((card) => {
+      card.nav.textContent = '暫時無法取得';
+      card.change.textContent = '--';
+      card.change.dataset.direction = 'flat';
+      card.date.textContent = '最新淨值日期 --';
+    });
+    fundNote.textContent = '基金資料目前無法讀取，請稍後重新整理。';
+  }
+}
 async function loadHaoNotes() {
   try {
     const response = await fetch('./public/data/hao-notes.json', { cache: 'no-store' });
@@ -514,6 +579,7 @@ function showMengZone() {
   siteTitle.textContent = '孟潔的壓箱寶';
   headerHomeButton.hidden = false;
   history.replaceState(null, '', '#mengjie');
+  loadMengFunds();
 }
 
 function showNotePlaceholder() {
@@ -603,6 +669,7 @@ loadTaiwanNightMarketInfo();
 loadUsMarketInfo();
 setInterval(refreshMarketsBySchedule, 5000);
 boot();
+
 
 
 
