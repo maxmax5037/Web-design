@@ -254,7 +254,7 @@ async function loadMarketInfo() {
     marketIndex.textContent = formatMarketNumber(latestIndex);
     marketChange.textContent = `${sign}${formatMarketNumber(change)} (${sign}${percent.toFixed(2)}%) 較09:00`;
     marketChange.dataset.direction = direction;
-    marketTime.textContent = ${latest[0]} 更新;
+    marketTime.textContent = `${latest[0]} 更新`;
     marketOpen.textContent = formatMarketNumber(firstIndex);
     marketHigh.textContent = formatMarketNumber(high);
     marketLow.textContent = formatMarketNumber(low);
@@ -365,6 +365,7 @@ if (initial) {
 } else {
   showHome();
 }
+
 
 
 
