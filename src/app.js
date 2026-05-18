@@ -32,13 +32,10 @@ const marketChange = document.querySelector('#marketChange');
 const marketTime = document.querySelector('#marketTime');
 const marketHigh = document.querySelector('#marketHigh');
 const marketLow = document.querySelector('#marketLow');
-const marketOpen = document.querySelector('#marketOpen');
-const marketPrevClose = document.querySelector('#marketPrevClose');
-const marketHigh52 = document.querySelector('#marketHigh52');
-const marketLow52 = document.querySelector('#marketLow52');
 const marketDate = document.querySelector('#marketDate');
 const marketNote = document.querySelector('#marketNote');
 const marketKChart = document.querySelector('#marketKChart');
+const chartRange = document.querySelector('#chartRange');
 
 const imagePath = (file) => `./public/uploads/images/${encodeURIComponent(file)}`;
 const coverImage = './public/uploads/images/cover.svg';
@@ -95,58 +92,72 @@ function formatMarketDate(value) {
 }
 
 
-function createSeries(rows) {
-  return rows
-    .map((row) => ({
-      time: row[0],
-      value: parseMarketNumber(row[1])
-    }))
-    .filter((point) => point.time && Number.isFinite(point.value));
+function createCandles(rows) {
+  const buckets = new Map();
+
+  rows.forEach((row) => {
+    const [time, rawIndex] = row;
+    const price = parseMarketNumber(rawIndex);
+    if (!Number.isFinite(price) || !time) {
+      return;
+    }
+
+    const [hour, minute] = time.split(':').map(Number);
+    const bucketMinute = Math.floor(minute / 5) * 5;
+    const key = `${String(hour).padStart(2, '0')}:${String(bucketMinute).padStart(2, '0')}`;
+
+    if (!buckets.has(key)) {
+      buckets.set(key, {
+        time: key,
+        open: price,
+        high: price,
+        low: price,
+        close: price
+      });
+      return;
+    }
+
+    const candle = buckets.get(key);
+    candle.high = Math.max(candle.high, price);
+    candle.low = Math.min(candle.low, price);
+    candle.close = price;
+  });
+
+  return Array.from(buckets.values());
 }
 
-function renderMarketChart(series, previousClose) {
+function renderKChart(candles) {
   marketKChart.innerHTML = '';
 
-  if (!series.length) {
+  if (!candles.length) {
+    chartRange.textContent = '--';
     return;
   }
 
-  const width = 760;
-  const height = 250;
-  const pad = { top: 16, right: 82, bottom: 30, left: 12 };
+  const width = 720;
+  const height = 260;
+  const pad = { top: 20, right: 54, bottom: 30, left: 14 };
   const plotWidth = width - pad.left - pad.right;
   const plotHeight = height - pad.top - pad.bottom;
-  const values = series.map((point) => point.value);
-  const min = Math.min(...values, previousClose || values[0]);
-  const max = Math.max(...values, previousClose || values[0]);
+  const lows = candles.map((candle) => candle.low);
+  const highs = candles.map((candle) => candle.high);
+  const min = Math.min(...lows);
+  const max = Math.max(...highs);
   const range = max - min || 1;
+  const step = plotWidth / candles.length;
+  const bodyWidth = Math.max(3, Math.min(9, step * 0.55));
   const ns = 'http://www.w3.org/2000/svg';
-
-  function x(index) {
-    return pad.left + (index / Math.max(1, series.length - 1)) * plotWidth;
-  }
 
   function y(value) {
     return pad.top + ((max - value) / range) * plotHeight;
   }
 
-  function add(tag, attrs, parent = marketKChart) {
+  function add(tag, attrs) {
     const element = document.createElementNS(ns, tag);
     Object.entries(attrs).forEach(([key, value]) => element.setAttribute(key, value));
-    parent.appendChild(element);
+    marketKChart.appendChild(element);
     return element;
   }
-
-  const gradient = add('defs', {});
-  const fillGradient = add('linearGradient', {
-    id: 'marketAreaGradient',
-    x1: '0',
-    y1: '0',
-    x2: '0',
-    y2: '1'
-  }, gradient);
-  add('stop', { offset: '0%', 'stop-color': '#22c55e', 'stop-opacity': '0.24' }, fillGradient);
-  add('stop', { offset: '100%', 'stop-color': '#22c55e', 'stop-opacity': '0.02' }, fillGradient);
 
   [min, (min + max) / 2, max].forEach((value) => {
     const yy = y(value);
@@ -158,70 +169,43 @@ function renderMarketChart(series, previousClose) {
       class: 'chart-grid-line'
     });
     add('text', {
-      x: pad.left,
-      y: yy - 5,
-      class: 'chart-axis-label-left'
+      x: width - pad.right + 8,
+      y: yy + 4,
+      class: 'chart-axis-label'
     }).textContent = formatMarketNumber(value);
   });
 
-  if (previousClose) {
-    const yy = y(previousClose);
+  candles.forEach((candle, index) => {
+    const x = pad.left + index * step + step / 2;
+    const up = candle.close >= candle.open;
+    const colorClass = up ? 'candle-up' : 'candle-down';
+    const highY = y(candle.high);
+    const lowY = y(candle.low);
+    const openY = y(candle.open);
+    const closeY = y(candle.close);
+    const bodyTop = Math.min(openY, closeY);
+    const bodyHeight = Math.max(2, Math.abs(closeY - openY));
+
     add('line', {
-      x1: pad.left,
-      y1: yy,
-      x2: width - pad.right,
-      y2: yy,
-      class: 'prev-close-line'
+      x1: x,
+      y1: highY,
+      x2: x,
+      y2: lowY,
+      class: `candle-wick ${colorClass}`
     });
-    add('text', {
-      x: width - pad.right + 10,
-      y: yy - 4,
-      class: 'prev-close-label'
-    }).textContent = `上次`;
-    add('text', {
-      x: width - pad.right + 10,
-      y: yy + 14,
-      class: 'prev-close-label'
-    }).textContent = `收盤價`;
-    add('text', {
-      x: width - pad.right + 10,
-      y: yy + 32,
-      class: 'prev-close-value'
-    }).textContent = formatMarketNumber(previousClose);
-  }
-
-  const linePoints = series.map((point, index) => `${x(index)},${y(point.value)}`).join(' ');
-  const areaPoints = `${pad.left},${height - pad.bottom} ${linePoints} ${width - pad.right},${height - pad.bottom}`;
-
-  add('polygon', {
-    points: areaPoints,
-    class: 'area-fill'
-  });
-  add('polyline', {
-    points: linePoints,
-    class: 'market-line'
+    add('rect', {
+      x: x - bodyWidth / 2,
+      y: bodyTop,
+      width: bodyWidth,
+      height: bodyHeight,
+      rx: 1,
+      class: `candle-body ${colorClass}`
+    });
   });
 
-  const lastPoint = series[series.length - 1];
-  add('circle', {
-    cx: x(series.length - 1),
-    cy: y(lastPoint.value),
-    r: 4,
-    class: 'market-dot'
-  });
-
-  const labelIndexes = [0, Math.floor(series.length * 0.28), Math.floor(series.length * 0.55), Math.floor(series.length * 0.82)];
-  labelIndexes.forEach((index) => {
-    const point = series[index];
-    if (!point) {
-      return;
-    }
-    add('text', {
-      x: x(index),
-      y: height - 8,
-      class: 'time-label'
-    }).textContent = point.time.slice(0, 5);
-  });
+  const first = candles[0].time;
+  const last = candles[candles.length - 1].time;
+  chartRange.textContent = `${first} - ${last}`;
 }
 async function loadMarketInfo() {
   const endpoint = 'https://www.twse.com.tw/rwd/zh/TAIEX/MI_5MINS_INDEX?response=json';
@@ -242,7 +226,6 @@ async function loadMarketInfo() {
     const latest = rows[rows.length - 1];
     const firstIndex = parseMarketNumber(first[1]);
     const latestIndex = parseMarketNumber(latest[1]);
-    const previousClose = firstIndex;
     const values = rows.map((row) => parseMarketNumber(row[1])).filter(Number.isFinite);
     const high = Math.max(...values);
     const low = Math.min(...values);
@@ -254,15 +237,11 @@ async function loadMarketInfo() {
     marketIndex.textContent = formatMarketNumber(latestIndex);
     marketChange.textContent = `${sign}${formatMarketNumber(change)} (${sign}${percent.toFixed(2)}%) 較09:00`;
     marketChange.dataset.direction = direction;
-    marketTime.textContent = `${latest[0]} 更新`;
-    marketOpen.textContent = formatMarketNumber(firstIndex);
+    marketTime.textContent = latest[0];
     marketHigh.textContent = formatMarketNumber(high);
     marketLow.textContent = formatMarketNumber(low);
-    marketPrevClose.textContent = formatMarketNumber(previousClose);
-    marketHigh52.textContent = '暫無';
-    marketLow52.textContent = '暫無';
     marketDate.textContent = formatMarketDate(payload.date);
-    renderMarketChart(createSeries(rows), previousClose);
+    renderKChart(createCandles(rows));
     marketNote.textContent = '來源：臺灣證券交易所每 5 秒指數統計。頁面約每 60 秒更新一次。';
   } catch (error) {
     marketIndex.textContent = '暫時無法取得';
@@ -271,12 +250,9 @@ async function loadMarketInfo() {
     marketTime.textContent = '--';
     marketHigh.textContent = '--';
     marketLow.textContent = '--';
-    marketOpen.textContent = '--';
-    marketPrevClose.textContent = '--';
-    marketHigh52.textContent = '--';
-    marketLow52.textContent = '--';
     marketDate.textContent = '--';
     marketKChart.innerHTML = '';
+    chartRange.textContent = '--';
     marketNote.textContent = '大盤資料讀取失敗，請稍後重新整理。';
   }
 }
@@ -365,7 +341,5 @@ if (initial) {
 } else {
   showHome();
 }
-
-
 
 
