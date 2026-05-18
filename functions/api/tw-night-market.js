@@ -73,7 +73,7 @@ function parseTaiwanFuture(html) {
   }
 
   return {
-    name: values[0],
+    name: '台指期近一',
     symbol: values[1],
     price,
     change,
@@ -126,6 +126,7 @@ export async function onRequestGet() {
     }
   );
 }
+
 
 
 
