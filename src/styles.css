@@ -57,10 +57,35 @@ h2 {
 }
 
 .header-status {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  justify-content: flex-end;
+  margin-bottom: 5px;
+}
+
+.header-status > div {
   display: grid;
   gap: 5px;
   justify-items: end;
-  margin-bottom: 5px;
+}
+
+.header-home-button {
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  color: var(--accent);
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  padding: 9px 12px;
+  white-space: nowrap;
+  background: var(--surface);
+}
+
+.header-home-button:hover {
+  border-color: var(--accent);
+  background: var(--accent-soft);
 }
 
 .header-meta {
@@ -413,6 +438,10 @@ h2 {
   }
 
   .header-status {
+    align-items: start;
+  }
+
+  .header-status > div {
     justify-items: start;
   }
 
@@ -437,6 +466,7 @@ h2 {
     min-height: 360px;
   }
 }
+
 
 
 

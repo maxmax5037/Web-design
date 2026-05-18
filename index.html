@@ -9,12 +9,15 @@
   <body>
     <header class="site-header">
       <div>
-        <p class="eyebrow">Max Test Area</p>
-        <h1>Max測試專區</h1>
+        <p class="eyebrow" id="siteEyebrow">Max Test Area</p>
+        <h1 id="siteTitle">Max測試專區</h1>
       </div>
       <div class="header-status">
-        <p class="header-meta" id="updateDate">目前更新到 --</p>
-        <p class="live-time" id="liveTime">現在時間 --</p>
+        <button class="header-home-button" id="headerHomeButton" type="button" hidden>返回主頁</button>
+        <div>
+          <p class="header-meta" id="updateDate">目前更新到 --</p>
+          <p class="live-time" id="liveTime">現在時間 --</p>
+        </div>
       </div>
     </header>
 
@@ -106,10 +109,6 @@
             <div>
               <p class="eyebrow">皓哥專區</p>
               <h2 id="viewerTitle">皓哥開示摘要圖</h2>
-            </div>
-            <div class="viewer-actions">
-              <button class="home-button" id="homeButton" type="button">返回主頁</button>
-              <a class="open-link" id="openImage" href="#" target="_blank" rel="noreferrer">開啟封面</a>
             </div>
           </div>
           <div class="image-frame">

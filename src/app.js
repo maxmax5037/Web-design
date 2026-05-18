@@ -29,11 +29,12 @@ const haoZoneButton = document.querySelector('#haoZoneButton');
 const gallery = document.querySelector('#gallery');
 const mainImage = document.querySelector('#mainImage');
 const viewerTitle = document.querySelector('#viewerTitle');
-const openImage = document.querySelector('#openImage');
 const emptyState = document.querySelector('#emptyState');
 const updateDate = document.querySelector('#updateDate');
 const liveTime = document.querySelector('#liveTime');
-const homeButton = document.querySelector('#homeButton');
+const siteEyebrow = document.querySelector('#siteEyebrow');
+const siteTitle = document.querySelector('#siteTitle');
+const headerHomeButton = document.querySelector('#headerHomeButton');
 const marketIndex = document.querySelector('#marketIndex');
 const marketChange = document.querySelector('#marketChange');
 const marketTime = document.querySelector('#marketTime');
@@ -75,7 +76,7 @@ function updateLiveTime() {
 }
 
 function setUpdateDate() {
-  updateDate.textContent = `目前更新到 ${formatToday()}`;
+  updateDate.textContent = `${formatToday()}已更新`;
 }
 
 function parseMarketNumber(value) {
@@ -200,12 +201,18 @@ async function loadUsMarketInfo() {
 function showHome() {
   homePanel.hidden = false;
   haoZone.hidden = true;
+  siteEyebrow.textContent = 'Max Test Area';
+  siteTitle.textContent = 'Max測試專區';
+  headerHomeButton.hidden = true;
   history.replaceState(null, '', location.pathname);
 }
 
 function showHaoZone() {
   homePanel.hidden = true;
   haoZone.hidden = false;
+  siteEyebrow.textContent = 'Hao Notes';
+  siteTitle.textContent = '皓哥開示摘要圖';
+  headerHomeButton.hidden = false;
   showCover();
   history.replaceState(null, '', '#hao');
 }
@@ -214,8 +221,6 @@ function showCover() {
   mainImage.src = coverImage;
   mainImage.alt = '皓哥專區封面';
   viewerTitle.textContent = '皓哥開示摘要圖';
-  openImage.href = coverImage;
-  openImage.textContent = '開啟封面';
   emptyState.hidden = true;
   mainImage.hidden = false;
 
@@ -227,13 +232,14 @@ function showCover() {
 function selectItem(item) {
   homePanel.hidden = true;
   haoZone.hidden = false;
+  siteEyebrow.textContent = 'Hao Notes';
+  siteTitle.textContent = '皓哥開示摘要圖';
+  headerHomeButton.hidden = false;
 
   const src = imagePath(item.file);
   mainImage.src = src;
   mainImage.alt = item.title;
   viewerTitle.textContent = item.title;
-  openImage.href = src;
-  openImage.textContent = '開啟原圖';
   emptyState.hidden = true;
   mainImage.hidden = false;
 
@@ -263,7 +269,7 @@ function renderGallery() {
 }
 
 haoZoneButton.addEventListener('click', showHaoZone);
-homeButton.addEventListener('click', showHome);
+headerHomeButton.addEventListener('click', showHome);
 
 setUpdateDate();
 updateLiveTime();
@@ -284,4 +290,6 @@ if (initial) {
 } else {
   showHome();
 }
+
+
 
