@@ -78,9 +78,25 @@ h2 {
 
 .home-panel {
   display: grid;
-  place-items: center;
+  gap: 26px;
+  align-content: start;
   min-height: calc(100vh - 150px);
   padding: 0 clamp(20px, 5vw, 64px) 48px;
+}
+
+.market-row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+  align-items: start;
+}
+
+.zone-section {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 280px));
+  gap: 14px;
+  justify-content: start;
+  padding-top: 8px;
 }
 
 
@@ -220,7 +236,7 @@ h2 {
   line-height: 1.5;
 }
 .zone-card {
-  width: min(100%, 560px);
+  width: 100%;
   border: 1px solid var(--line);
   border-left: 6px solid var(--accent);
   border-radius: 8px;
@@ -407,6 +423,10 @@ h2 {
     grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
   }
 
+  .market-row {
+    grid-template-columns: 1fr;
+  }
+
   .market-grid,
   .us-index-grid {
     grid-template-columns: 1fr;
@@ -416,6 +436,8 @@ h2 {
     min-height: 360px;
   }
 }
+
+
 
 
 
