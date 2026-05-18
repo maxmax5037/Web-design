@@ -20,6 +20,40 @@
 
     <main>
       <section class="home-panel" id="homePanel" aria-label="主頁入口">
+        <article class="market-card" aria-label="即時大盤資訊">
+          <div class="market-head">
+            <div>
+              <p class="eyebrow">Market</p>
+              <h2>即時大盤資訊</h2>
+            </div>
+            <span class="market-source">TWSE</span>
+          </div>
+          <div class="market-main">
+            <span class="market-label">加權指數</span>
+            <strong class="market-index" id="marketIndex">讀取中</strong>
+            <span class="market-change" id="marketChange">--</span>
+          </div>
+          <dl class="market-grid">
+            <div>
+              <dt>資料時間</dt>
+              <dd id="marketTime">--</dd>
+            </div>
+            <div>
+              <dt>日內高點</dt>
+              <dd id="marketHigh">--</dd>
+            </div>
+            <div>
+              <dt>日內低點</dt>
+              <dd id="marketLow">--</dd>
+            </div>
+            <div>
+              <dt>資料日期</dt>
+              <dd id="marketDate">--</dd>
+            </div>
+          </dl>
+          <p class="market-note" id="marketNote">來源：臺灣證券交易所每 5 秒指數統計。頁面約每 60 秒更新一次。</p>
+        </article>
+
         <button class="zone-card" id="haoZoneButton" type="button">
           <span class="zone-label">皓哥專區</span>
           <span class="zone-desc">查看皓哥開示摘要圖</span>
