@@ -113,7 +113,7 @@ h2 {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 18px;
-  align-items: stretch;
+  align-items: start;
 }
 
 .home-photo {
@@ -143,10 +143,10 @@ h2 {
 
 .zone-section {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 280px));
-  gap: 14px;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 180px));
+  gap: 12px;
   justify-content: start;
-  align-items: stretch;
+  align-items: start;
 }
 
 .market-card {
@@ -289,19 +289,20 @@ h2 {
 }
 
 .zone-card {
-  min-height: 100%;
   width: 100%;
+  min-height: 132px;
   border: 1px solid var(--line);
-  border-left: 6px solid var(--accent);
+  border-left: 5px solid var(--accent);
   border-radius: 8px;
   background: var(--surface);
   color: var(--text);
   cursor: pointer;
   display: grid;
-  gap: 12px;
-  padding: 28px;
+  gap: 8px;
+  align-content: center;
+  padding: 18px;
   text-align: left;
-  box-shadow: var(--shadow);
+  box-shadow: 0 10px 28px rgba(31, 41, 55, 0.08);
 }
 
 .zone-card:hover {
@@ -310,14 +311,14 @@ h2 {
 }
 
 .zone-label {
-  font-size: clamp(26px, 4vw, 36px);
+  font-size: 24px;
   font-weight: 800;
   line-height: 1.2;
 }
 
 .zone-desc {
   color: var(--muted);
-  font-size: 16px;
+  font-size: 14px;
 }
 
 .zone-action {
@@ -733,6 +734,8 @@ h2 {
     flex-direction: column;
   }
 }
+
+
 
 
 
