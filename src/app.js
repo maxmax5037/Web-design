@@ -119,82 +119,106 @@ function inlineMarkdown(value) {
     .replace(/#([\p{L}\p{N}_-]+)/gu, '<span class="tag">#$1</span>');
 }
 
-function markdownToHtml(markdown) {
+function parseMarkdownSections(markdown) {
   const lines = markdown.replace(/\r\n/g, '\n').split('\n');
+  const titleLine = lines.find((line) => line.startsWith('# ')) || '';
+  const title = titleLine.replace(/^#\s+/, '').trim();
+  const sections = [];
+  let current = null;
+
+  lines.forEach((line) => {
+    const trimmed = line.trim();
+    if (!trimmed || trimmed.startsWith('# ')) {
+      return;
+    }
+
+    if (trimmed.startsWith('## ')) {
+      current = { heading: trimmed.slice(3).trim(), lines: [] };
+      sections.push(current);
+      return;
+    }
+
+    if (!current) {
+      current = { heading: '摘要', lines: [] };
+      sections.push(current);
+    }
+
+    current.lines.push(trimmed);
+  });
+
+  return { title, sections };
+}
+
+function sectionIcon(heading) {
+  const map = [
+    ['一句話', '重'],
+    ['主軸', '軸'],
+    ['投資', '投'],
+    ['標籤', '#'],
+    ['笑話', '笑'],
+    ['補充', '補'],
+    ['對應', '卡'],
+    ['其他', '其'],
+    ['今日', '今']
+  ];
+  return map.find(([key]) => heading.includes(key))?.[1] || '摘';
+}
+
+function renderSectionLines(lines) {
   const html = [];
-  let inList = false;
-  let inQuote = false;
+  let listOpen = false;
+  let quoteOpen = false;
 
   function closeList() {
-    if (inList) {
+    if (listOpen) {
       html.push('</ul>');
-      inList = false;
+      listOpen = false;
     }
   }
 
   function closeQuote() {
-    if (inQuote) {
+    if (quoteOpen) {
       html.push('</blockquote>');
-      inQuote = false;
+      quoteOpen = false;
     }
   }
 
   lines.forEach((line) => {
-    const trimmed = line.trim();
-
-    if (!trimmed) {
+    if (line.startsWith('>')) {
       closeList();
-      closeQuote();
-      return;
-    }
-
-    if (trimmed.startsWith('>')) {
-      closeList();
-      if (!inQuote) {
+      if (!quoteOpen) {
         html.push('<blockquote>');
-        inQuote = true;
+        quoteOpen = true;
       }
-      html.push(`<p>${inlineMarkdown(trimmed.replace(/^>\s?/, ''))}</p>`);
+      html.push(`<p>${inlineMarkdown(line.replace(/^>\s?/, ''))}</p>`);
       return;
     }
 
     closeQuote();
 
-    if (trimmed.startsWith('### ')) {
+    if (line.startsWith('### ')) {
       closeList();
-      html.push(`<h3>${inlineMarkdown(trimmed.slice(4))}</h3>`);
+      html.push(`<h3>${inlineMarkdown(line.slice(4))}</h3>`);
       return;
     }
 
-    if (trimmed.startsWith('## ')) {
+    if (/^\d+\.\s+/.test(line)) {
       closeList();
-      html.push(`<h2>${inlineMarkdown(trimmed.slice(3))}</h2>`);
+      html.push(`<h3>${inlineMarkdown(line.replace(/^\d+\.\s+/, ''))}</h3>`);
       return;
     }
 
-    if (trimmed.startsWith('# ')) {
-      closeList();
-      html.push(`<h1>${inlineMarkdown(trimmed.slice(2))}</h1>`);
-      return;
-    }
-
-    if (/^-\s+/.test(trimmed)) {
-      if (!inList) {
+    if (/^-\s+/.test(line)) {
+      if (!listOpen) {
         html.push('<ul>');
-        inList = true;
+        listOpen = true;
       }
-      html.push(`<li>${inlineMarkdown(trimmed.replace(/^-\s+/, ''))}</li>`);
-      return;
-    }
-
-    if (/^\d+\.\s+/.test(trimmed)) {
-      closeList();
-      html.push(`<h3>${inlineMarkdown(trimmed.replace(/^\d+\.\s+/, ''))}</h3>`);
+      html.push(`<li>${inlineMarkdown(line.replace(/^-\s+/, ''))}</li>`);
       return;
     }
 
     closeList();
-    html.push(`<p>${inlineMarkdown(trimmed)}</p>`);
+    html.push(`<p>${inlineMarkdown(line)}</p>`);
   });
 
   closeList();
@@ -202,6 +226,51 @@ function markdownToHtml(markdown) {
   return html.join('');
 }
 
+function renderTags(section) {
+  const tags = section.lines
+    .map((line) => line.replace(/^-\s+/, '').trim())
+    .filter(Boolean)
+    .map((tag) => tag.startsWith('#') ? tag : `#${tag}`);
+
+  if (!tags.length) {
+    return '';
+  }
+
+  return `<div class="tag-cloud">${tags.map((tag) => `<span class="tag">${inlineMarkdown(tag)}</span>`).join('')}</div>`;
+}
+
+function markdownToHtml(markdown) {
+  const { title, sections } = parseMarkdownSections(markdown);
+  const sourceSection = sections.find((section) => section.lines.some((line) => line.startsWith('>')));
+  const normalSections = sections.filter((section) => section !== sourceSection);
+  const oneLine = normalSections.find((section) => section.heading.includes('一句話'));
+  const tagSection = normalSections.find((section) => section.heading.includes('標籤'));
+  const cardSections = normalSections.filter((section) => section !== oneLine && section !== tagSection);
+
+  return `
+    <div class="note-hero">
+      <div>
+        <p class="note-kicker">Hao Notes</p>
+        <h1>${inlineMarkdown(title)}</h1>
+      </div>
+      <span class="note-badge">網頁版</span>
+    </div>
+    ${sourceSection ? `<div class="source-card">${renderSectionLines(sourceSection.lines)}</div>` : ''}
+    ${oneLine ? `<section class="key-takeaway"><span class="takeaway-label">一句話</span>${renderSectionLines(oneLine.lines)}</section>` : ''}
+    ${tagSection ? renderTags(tagSection) : ''}
+    <div class="note-card-grid">
+      ${cardSections.map((section) => `
+        <section class="note-card">
+          <div class="note-card-head">
+            <span class="note-icon">${sectionIcon(section.heading)}</span>
+            <h2>${inlineMarkdown(section.heading)}</h2>
+          </div>
+          <div class="note-card-body">${renderSectionLines(section.lines)}</div>
+        </section>
+      `).join('')}
+    </div>
+  `;
+}
 async function loadTaiwanMarketInfo() {
   const endpoint = 'https://www.twse.com.tw/rwd/zh/TAIEX/MI_5MINS_INDEX?response=json';
 
@@ -410,3 +479,4 @@ loadUsMarketInfo();
 setInterval(loadTaiwanMarketInfo, 5000);
 setInterval(loadUsMarketInfo, 5000);
 boot();
+

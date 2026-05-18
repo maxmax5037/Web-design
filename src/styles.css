@@ -407,7 +407,7 @@ h2 {
 .note-reader {
   min-height: 520px;
   padding: 28px;
-  background: #f9fbfd;
+  background: linear-gradient(180deg, #f8fbff 0%, #f9fbfd 100%);
 }
 
 .note-empty {
@@ -420,49 +420,185 @@ h2 {
 }
 
 .note-content {
-  max-width: 860px;
+  max-width: 1040px;
   margin: 0 auto;
   color: var(--text);
   line-height: 1.75;
 }
 
-.note-content h1 {
-  font-size: 30px;
-  margin-bottom: 22px;
+.note-hero {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 24px;
+  box-shadow: 0 14px 34px rgba(31, 41, 55, 0.08);
 }
 
-.note-content h2 {
-  border-left: 5px solid var(--accent);
-  font-size: 22px;
-  margin: 30px 0 14px;
-  padding-left: 12px;
+.note-kicker {
+  margin: 0 0 8px;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: uppercase;
 }
 
-.note-content h3 {
+.note-hero h1 {
+  font-size: clamp(28px, 4vw, 40px);
+  line-height: 1.22;
+  margin: 0;
+}
+
+.note-badge {
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--accent);
+  background: var(--accent-soft);
+  font-size: 13px;
+  font-weight: 800;
+  padding: 7px 12px;
+  white-space: nowrap;
+}
+
+.source-card,
+.key-takeaway,
+.note-card,
+.original-image {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+  box-shadow: 0 8px 22px rgba(31, 41, 55, 0.05);
+}
+
+.source-card {
+  margin-top: 16px;
+  padding: 16px 18px;
+  color: var(--muted);
+  background: #f8fafc;
+}
+
+.source-card p {
+  margin: 4px 0;
+}
+
+.key-takeaway {
+  position: relative;
+  margin-top: 18px;
+  padding: 22px 24px 22px 28px;
+  overflow: hidden;
+}
+
+.key-takeaway::before {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 6px;
+  background: var(--accent);
+  content: "";
+}
+
+.takeaway-label {
+  display: inline-block;
+  border-radius: 999px;
+  color: #0f5132;
+  background: #dcfce7;
+  font-size: 13px;
+  font-weight: 900;
+  margin-bottom: 10px;
+  padding: 4px 10px;
+}
+
+.key-takeaway p {
+  margin: 0;
   font-size: 18px;
-  margin: 22px 0 8px;
+  font-weight: 700;
 }
 
-.note-content p {
-  margin: 10px 0;
+.tag-cloud {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px;
+  margin: 18px 0;
 }
 
-.note-content ul {
+.tag {
+  display: inline-block;
+  border: 1px solid #dbeafe;
+  border-radius: 999px;
+  color: #1f6feb;
+  background: var(--accent-soft);
+  font-size: 14px;
+  font-weight: 800;
+  padding: 5px 11px;
+}
+
+.note-card-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  margin-top: 18px;
+}
+
+.note-card {
+  padding: 20px;
+}
+
+.note-card-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.note-icon {
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  color: #ffffff;
+  background: var(--accent);
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  font-size: 15px;
+  font-weight: 900;
+}
+
+.note-card h2 {
+  font-size: 20px;
+  margin: 0;
+}
+
+.note-card h3 {
+  border-top: 1px solid var(--line);
+  font-size: 16px;
+  margin: 16px 0 8px;
+  padding-top: 14px;
+}
+
+.note-card p,
+.note-card li,
+.source-card p {
+  font-size: 15px;
+}
+
+.note-card p {
+  margin: 9px 0;
+}
+
+.note-card ul {
   display: grid;
   gap: 8px;
-  margin: 10px 0 18px;
-  padding-left: 22px;
+  margin: 10px 0 0;
+  padding-left: 20px;
 }
 
-.note-content li {
-  padding-left: 2px;
-}
-
-.note-content blockquote {
+.note-card blockquote {
   border-left: 4px solid var(--line);
   color: var(--muted);
-  margin: 0 0 20px;
-  padding: 10px 16px;
+  margin: 0 0 14px;
+  padding: 10px 14px;
   background: #f8fafc;
 }
 
@@ -472,21 +608,9 @@ h2 {
   padding: 2px 6px;
 }
 
-.tag {
-  display: inline-block;
-  border-radius: 999px;
-  color: #1f6feb;
-  background: var(--accent-soft);
-  font-weight: 800;
-  padding: 1px 8px;
-}
-
 .original-image {
-  max-width: 860px;
-  margin: 28px auto 0;
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  background: var(--surface);
+  max-width: 1040px;
+  margin: 22px auto 0;
   padding: 14px;
 }
 
@@ -501,8 +625,7 @@ h2 {
   margin-top: 14px;
   border: 1px solid var(--line);
   border-radius: 6px;
-}
-.image-frame {
+}.image-frame {
   position: relative;
   min-height: 520px;
   display: grid;
@@ -562,7 +685,17 @@ h2 {
   }
 
   .note-reader {
-    padding: 20px;
+    padding: 18px;
+  }
+
+  .note-card-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .note-hero {
+    flex-direction: column;
   }
 }
+
+
 
