@@ -110,21 +110,21 @@ h2 {
 }
 
 .home-photo {
+  grid-column: 2;
   width: 100%;
   overflow: hidden;
   border: 1px solid var(--line);
   border-radius: 8px;
   background: var(--surface);
   box-shadow: var(--shadow);
-  aspect-ratio: 16 / 7;
 }
 
 .home-photo img {
   width: 100%;
-  height: 100%;
+  height: auto;
   display: block;
-  object-fit: cover;
-  object-position: center 42%;
+  opacity: 0.72;
+  filter: saturate(0.82) brightness(1.08);
 }
 .market-row {
   display: grid;
@@ -684,6 +684,9 @@ h2 {
     justify-items: start;
   }
 
+  .home-photo {
+    grid-column: auto;
+  }
   .market-row {
     grid-template-columns: 1fr;
   }
@@ -713,6 +716,8 @@ h2 {
     flex-direction: column;
   }
 }
+
+
 
 
 
