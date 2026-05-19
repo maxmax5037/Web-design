@@ -368,37 +368,25 @@ function refreshMarketsBySchedule() {
   }
 }
 async function loadTaiwanMarketInfo() {
-  const endpoint = 'https://www.twse.com.tw/rwd/zh/TAIEX/MI_5MINS_INDEX?response=json';
-
   try {
-    const response = await fetch(`${endpoint}&_=${Date.now()}`, { cache: 'no-store' });
+    const response = await fetch(`/api/taiwan-market?_=${Date.now()}`, { cache: 'no-store' });
     if (!response.ok) {
       throw new Error(`HTTP ${response.status}`);
     }
 
     const payload = await response.json();
-    const rows = Array.isArray(payload.data) ? payload.data : [];
-    if (payload.stat !== 'OK' || rows.length === 0) {
-      throw new Error(payload.stat || 'no market data');
+    const quote = payload.quote;
+    if (!quote || typeof quote.price !== 'number') {
+      throw new Error('missing taiwan market quote');
     }
 
-    const first = rows[0];
-    const latest = rows[rows.length - 1];
-    const firstIndex = parseMarketNumber(first[1]);
-    const latestIndex = parseMarketNumber(latest[1]);
-    const values = rows.map((row) => parseMarketNumber(row[1])).filter(Number.isFinite);
-    const high = Math.max(...values);
-    const low = Math.min(...values);
-    const change = latestIndex - firstIndex;
-    const percent = firstIndex ? (change / firstIndex) * 100 : 0;
-
-    marketIndex.textContent = formatMarketNumber(latestIndex);
-    setChangeText(marketChange, change, percent, ' 較09:00');
-    marketTime.textContent = latest[0];
-    marketHigh.textContent = formatMarketNumber(high);
-    marketLow.textContent = formatMarketNumber(low);
-    marketDate.textContent = formatMarketDate(payload.date);
-    marketNote.textContent = '來源：臺灣證券交易所。頁面載入先抓一次，台股平日 08:45-13:45 每 5 秒更新。';
+    marketIndex.textContent = formatMarketNumber(quote.price);
+    setChangeText(marketChange, quote.change || 0, quote.percent || 0, ' 較昨收');
+    marketTime.textContent = quote.time || '--';
+    marketHigh.textContent = typeof quote.high === 'number' ? formatMarketNumber(quote.high) : '--';
+    marketLow.textContent = typeof quote.low === 'number' ? formatMarketNumber(quote.low) : '--';
+    marketDate.textContent = quote.date || '--';
+    marketNote.textContent = '來源：臺灣證券交易所 MIS 即時行情。頁面載入先抓一次，台股平日 08:45-13:45 每 5 秒更新。';
   } catch (error) {
     marketIndex.textContent = '暫時無法取得';
     marketChange.textContent = '--';
@@ -685,6 +673,7 @@ loadUsMarketInfo();
 setInterval(refreshMarketsBySchedule, 5000);
 setInterval(refreshFundsBySchedule, 5000);
 boot();
+
 
 
 
