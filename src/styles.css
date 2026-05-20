@@ -508,6 +508,61 @@ h2 {
   font-size: 13px;
   line-height: 1.5;
 }
+.love-note {
+  width: min(980px, 100%);
+  min-height: 210px;
+  border: 1px solid #c9e4e1;
+  border-radius: 8px;
+  background:
+    radial-gradient(circle at 18% 28%, rgba(255, 120, 150, 0.16), transparent 28%),
+    linear-gradient(135deg, rgba(0, 167, 157, 0.12), rgba(255, 255, 255, 0.86) 48%, rgba(255, 232, 238, 0.72));
+  box-shadow: 0 18px 42px rgba(0, 127, 120, 0.10);
+  color: #007f78;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  font-size: clamp(34px, 5vw, 58px);
+  font-weight: 900;
+  letter-spacing: 0;
+  margin-top: 48px;
+  position: relative;
+  overflow: hidden;
+}
+
+.love-note::before,
+.love-note::after {
+  content: '';
+  position: absolute;
+  border-radius: 999px;
+  background: rgba(0, 167, 157, 0.10);
+}
+
+.love-note::before {
+  width: 150px;
+  height: 150px;
+  left: 8%;
+  bottom: -60px;
+}
+
+.love-note::after {
+  width: 210px;
+  height: 210px;
+  right: -56px;
+  top: -72px;
+}
+
+.love-note > span {
+  position: relative;
+  z-index: 1;
+}
+
+.love-note-heart {
+  color: #e75b78;
+  font-size: 0.9em;
+  line-height: 1;
+  filter: drop-shadow(0 8px 14px rgba(231, 91, 120, 0.22));
+}
 .layout {
   display: grid;
   grid-template-columns: minmax(240px, 340px) minmax(0, 1fr);
@@ -926,6 +981,8 @@ h2 {
     flex-direction: column;
   }
 }
+
+
 
 
 
