@@ -600,7 +600,7 @@ h2 {
 }
 .dog-chase {
   width: min(760px, 100%);
-  min-height: 170px;
+  min-height: 210px;
   border-radius: 8px;
   border: 1px solid #d9e4ef;
   background: linear-gradient(180deg, #ffffff 0%, #f7fbff 100%);
@@ -614,68 +614,104 @@ h2 {
   position: absolute;
   left: 0;
   right: 0;
-  bottom: 34px;
-  border-bottom: 2px dashed rgba(128, 142, 160, 0.34);
+  bottom: 38px;
+  border-bottom: 2px dashed rgba(128, 142, 160, 0.28);
 }
 
 .dog-track {
   position: relative;
-  height: 170px;
+  height: 210px;
 }
 
-.line-dog {
+.chasing-dog {
   position: absolute;
   left: 0;
-  bottom: 28px;
-  width: 170px;
+  bottom: 20px;
+  width: 210px;
   height: auto;
-  stroke-width: 7;
-  animation-duration: 5.4s;
+  animation-duration: 5.6s;
   animation-timing-function: linear;
   animation-iteration-count: infinite;
-  filter: drop-shadow(0 7px 9px rgba(31, 42, 55, 0.12));
+  filter: drop-shadow(0 8px 10px rgba(31, 42, 55, 0.14));
+}
+
+.dog-hop {
+  animation: dogHop 0.52s ease-in-out infinite alternate;
+  transform-origin: 50% 82%;
+}
+
+.dog-fill {
+  stroke: none;
+}
+
+.dog-golden-fill {
+  fill: #ecd39d;
+}
+
+.dog-white-fill {
+  fill: #fffdf8;
+}
+
+.dog-outline {
+  fill: none;
+  stroke: #171717;
+  stroke-width: 9;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.dog-face {
+  fill: none;
+  stroke: #171717;
+  stroke-width: 7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.dog-eye {
+  fill: #171717;
+}
+
+.dog-collar {
+  fill: none;
+  stroke: #ff7774;
+  stroke-width: 7;
+  stroke-linecap: round;
 }
 
 .golden-dog {
-  color: #d29b32;
   animation-name: goldenRun;
 }
 
 .white-dog {
-  color: #dfe7ef;
   animation-name: whiteRun;
-  stroke: #dfe7ef;
-}
-
-.line-dog .dog-body {
-  animation: dogBounce 0.55s ease-in-out infinite alternate;
 }
 
 @keyframes goldenRun {
-  0% { left: -190px; transform: translateY(0); }
-  48% { left: calc(100% + 24px); transform: translateY(-4px); }
-  100% { left: -190px; transform: translateY(0); }
+  0% { left: -230px; transform: translateY(0) rotate(0deg); }
+  48% { left: calc(100% + 24px); transform: translateY(-5px) rotate(1.5deg); }
+  100% { left: -230px; transform: translateY(0) rotate(0deg); }
 }
 
 @keyframes whiteRun {
-  0% { left: -310px; transform: translateY(8px); }
-  48% { left: calc(100% - 96px); transform: translateY(4px); }
-  100% { left: -310px; transform: translateY(8px); }
+  0% { left: -380px; transform: translateY(12px) rotate(-1deg); }
+  48% { left: calc(100% - 120px); transform: translateY(7px) rotate(1deg); }
+  100% { left: -380px; transform: translateY(12px) rotate(-1deg); }
 }
 
-@keyframes dogBounce {
-  from { transform: translateY(0); }
-  to { transform: translateY(-5px); }
+@keyframes dogHop {
+  from { transform: translateY(0) scaleY(1); }
+  to { transform: translateY(-8px) scaleY(0.98); }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .line-dog,
-  .line-dog .dog-body {
+  .chasing-dog,
+  .dog-hop {
     animation: none;
   }
 
   .golden-dog { left: 52%; transform: translateY(0); }
-  .white-dog { left: 10%; transform: translateY(8px); }
+  .white-dog { left: 10%; transform: translateY(12px); }
 }
 .layout {
   display: grid;
