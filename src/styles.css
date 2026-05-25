@@ -598,6 +598,85 @@ h2 {
   font-size: clamp(13px, 1.8vw, 17px);
   font-weight: 800;
 }
+.dog-chase {
+  width: min(760px, 100%);
+  min-height: 170px;
+  border-radius: 8px;
+  border: 1px solid #d9e4ef;
+  background: linear-gradient(180deg, #ffffff 0%, #f7fbff 100%);
+  box-shadow: 0 16px 36px rgba(31, 42, 55, 0.08);
+  overflow: hidden;
+  position: relative;
+}
+
+.dog-chase::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 34px;
+  border-bottom: 2px dashed rgba(128, 142, 160, 0.34);
+}
+
+.dog-track {
+  position: relative;
+  height: 170px;
+}
+
+.line-dog {
+  position: absolute;
+  left: 0;
+  bottom: 28px;
+  width: 170px;
+  height: auto;
+  stroke-width: 7;
+  animation-duration: 5.4s;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+  filter: drop-shadow(0 7px 9px rgba(31, 42, 55, 0.12));
+}
+
+.golden-dog {
+  color: #d29b32;
+  animation-name: goldenRun;
+}
+
+.white-dog {
+  color: #dfe7ef;
+  animation-name: whiteRun;
+  stroke: #dfe7ef;
+}
+
+.line-dog .dog-body {
+  animation: dogBounce 0.55s ease-in-out infinite alternate;
+}
+
+@keyframes goldenRun {
+  0% { left: -190px; transform: translateY(0); }
+  48% { left: calc(100% + 24px); transform: translateY(-4px); }
+  100% { left: -190px; transform: translateY(0); }
+}
+
+@keyframes whiteRun {
+  0% { left: -310px; transform: translateY(8px); }
+  48% { left: calc(100% - 96px); transform: translateY(4px); }
+  100% { left: -310px; transform: translateY(8px); }
+}
+
+@keyframes dogBounce {
+  from { transform: translateY(0); }
+  to { transform: translateY(-5px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .line-dog,
+  .line-dog .dog-body {
+    animation: none;
+  }
+
+  .golden-dog { left: 52%; transform: translateY(0); }
+  .white-dog { left: 10%; transform: translateY(8px); }
+}
 .layout {
   display: grid;
   grid-template-columns: minmax(240px, 340px) minmax(0, 1fr);
@@ -1016,30 +1095,3 @@ h2 {
     flex-direction: column;
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
