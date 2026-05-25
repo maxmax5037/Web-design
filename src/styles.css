@@ -508,38 +508,83 @@ h2 {
   font-size: 13px;
   line-height: 1.5;
 }
-.pet-note {
+.days-card {
   width: min(980px, 100%);
-  min-height: 240px;
-  border: 1px solid var(--line);
-  border-left: 5px solid var(--accent);
+  min-height: 500px;
   border-radius: 8px;
-  background: linear-gradient(135deg, #ffffff 0%, #f6fbff 48%, #fff8f3 100%);
-  box-shadow: 0 18px 42px rgba(31, 42, 55, 0.08);
+  background:
+    linear-gradient(90deg, rgba(136, 82, 22, 0.08) 1px, transparent 1px),
+    linear-gradient(0deg, rgba(136, 82, 22, 0.07) 1px, transparent 1px),
+    linear-gradient(135deg, #ead09f 0%, #f7e4b8 38%, #dfbd7d 100%);
+  background-size: 44px 44px, 44px 44px, auto;
+  box-shadow: 0 22px 52px rgba(96, 64, 28, 0.16);
+  display: grid;
+  justify-items: center;
+  align-content: start;
+  padding: clamp(24px, 4vw, 42px);
+}
+
+.days-card-brand {
+  margin: 0 0 24px;
+  color: rgba(122, 76, 26, 0.72);
+  font-size: clamp(34px, 5vw, 56px);
+  font-weight: 900;
+  letter-spacing: 0;
+}
+
+.days-card-panel {
+  width: min(820px, 100%);
+  overflow: hidden;
+  border-radius: 8px;
+  background: #ffffff;
+  box-shadow: 0 10px 0 rgba(0, 0, 0, 0.08), 0 18px 36px rgba(70, 50, 30, 0.20);
+}
+
+.days-card-title {
+  color: #ffffff;
+  background: linear-gradient(180deg, #ff980f 0%, #f47f0b 100%);
+  border-bottom: 1px dashed rgba(255, 255, 255, 0.35);
+  padding: 28px 18px;
+  text-align: center;
+  font-size: clamp(26px, 4vw, 42px);
+  font-weight: 900;
+  text-shadow: 0 2px 4px rgba(98, 44, 0, 0.25);
+}
+
+.days-card-title span {
+  color: #e92736;
+  filter: drop-shadow(0 2px 2px rgba(74, 0, 0, 0.28));
+}
+
+.days-card-body {
+  min-height: 260px;
+  display: grid;
+  place-items: center;
+  background:
+    linear-gradient(rgba(48, 93, 140, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(48, 93, 140, 0.04) 1px, transparent 1px),
+    #ffffff;
+  background-size: 18px 18px;
+}
+
+.days-count {
+  color: #202124;
+  font-size: clamp(82px, 15vw, 180px);
+  line-height: 1;
+  font-weight: 900;
+  letter-spacing: 0;
+}
+
+.days-card-footer {
+  border-top: 1px solid #e3e3e3;
+  color: #8a8f98;
   display: flex;
-  align-items: center;
-  padding: clamp(26px, 4vw, 44px);
-}
-
-.pet-note-kicker {
-  margin: 0 0 12px;
-  color: var(--accent);
-  font-size: 13px;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 14px;
+  padding: 26px 18px 30px;
+  font-size: clamp(18px, 2.6vw, 30px);
   font-weight: 800;
-  text-transform: uppercase;
-}
-
-.pet-note h3 {
-  margin: 0 0 12px;
-  color: var(--text);
-  font-size: clamp(28px, 4vw, 44px);
-}
-
-.pet-note p:last-child {
-  margin: 0;
-  color: var(--muted);
-  font-size: 16px;
-  line-height: 1.7;
 }
 .layout {
   display: grid;
@@ -959,6 +1004,8 @@ h2 {
     flex-direction: column;
   }
 }
+
+
 
 
 

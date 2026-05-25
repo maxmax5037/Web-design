@@ -47,6 +47,7 @@ let haoNotes = [];
 
 const XIAOBAI_PASSWORD = '0912';
 const XIAOBAI_UNLOCK_KEY = 'xiaobai-unlocked';
+const XIAOBAI_START_DATE = '2025-09-12';
 
 const homePanel = document.querySelector('#homePanel');
 const haoZone = document.querySelector('#haoZone');
@@ -78,6 +79,8 @@ const nightMarketTime = document.querySelector('#nightMarketTime');
 const nightMarketNote = document.querySelector('#nightMarketNote');
 const usMarketNote = document.querySelector('#usMarketNote');
 const fundNote = document.querySelector('#fundNote');
+const xiaobaiDaysCount = document.querySelector('#xiaobaiDaysCount');
+const xiaobaiStartWeekday = document.querySelector('#xiaobaiStartWeekday');
 const fundCards = {
   '1205': {
     nav: document.querySelector('#fund-1205-nav'),
@@ -568,6 +571,41 @@ async function loadHaoNotes() {
   }
 }
 
+
+function getTaipeiDateOnly() {
+  const parts = new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'Asia/Taipei',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit'
+  }).formatToParts(new Date());
+  const lookup = Object.fromEntries(parts.map((part) => [part.type, part.value]));
+  return `${lookup.year}-${lookup.month}-${lookup.day}`;
+}
+
+function dateOnlyToUtc(dateText) {
+  const [year, month, day] = dateText.split('-').map(Number);
+  return Date.UTC(year, month - 1, day);
+}
+
+function updateXiaobaiDays() {
+  if (!xiaobaiDaysCount) {
+    return;
+  }
+
+  const todayUtc = dateOnlyToUtc(getTaipeiDateOnly());
+  const startUtc = dateOnlyToUtc(XIAOBAI_START_DATE);
+  const diffDays = Math.floor((todayUtc - startUtc) / 86400000) + 1;
+  xiaobaiDaysCount.textContent = Math.max(diffDays, 1).toLocaleString('zh-TW');
+
+  if (xiaobaiStartWeekday) {
+    const weekday = new Intl.DateTimeFormat('zh-TW', {
+      timeZone: 'Asia/Taipei',
+      weekday: 'long'
+    }).format(new Date(`${XIAOBAI_START_DATE}T00:00:00+08:00`));
+    xiaobaiStartWeekday.textContent = weekday;
+  }
+}
 function showHome() {
   homePanel.hidden = false;
   haoZone.hidden = true;
@@ -739,13 +777,16 @@ headerHomeButton.addEventListener('click', showHome);
 
 setUpdateDate();
 updateLiveTime();
+updateXiaobaiDays();
 setInterval(updateLiveTime, 1000);
+setInterval(updateXiaobaiDays, 60000);
 loadTaiwanMarketInfo();
 loadTaiwanNightMarketInfo();
 loadUsMarketInfo();
 setInterval(refreshMarketsBySchedule, 5000);
 setInterval(refreshFundsBySchedule, 5000);
 boot();
+
 
 
 
