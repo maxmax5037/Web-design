@@ -45,6 +45,9 @@ const usIndices = [
 
 let haoNotes = [];
 
+const XIAOBAI_PASSWORD = '0912';
+const XIAOBAI_UNLOCK_KEY = 'xiaobai-unlocked';
+
 const homePanel = document.querySelector('#homePanel');
 const haoZone = document.querySelector('#haoZone');
 const mengZone = document.querySelector('#mengZone');
@@ -604,6 +607,27 @@ function showMengZone() {
 }
 
 
+function isXiaobaiUnlocked() {
+  return sessionStorage.getItem(XIAOBAI_UNLOCK_KEY) === 'true';
+}
+
+function requestXiaobaiAccess() {
+  if (isXiaobaiUnlocked()) {
+    return true;
+  }
+
+  const input = window.prompt('請輸入小白金毛專區密碼');
+  if (input === XIAOBAI_PASSWORD) {
+    sessionStorage.setItem(XIAOBAI_UNLOCK_KEY, 'true');
+    return true;
+  }
+
+  if (input !== null) {
+    window.alert('密碼錯誤');
+  }
+  return false;
+}
+
 function showXiaobaiZone() {
   homePanel.hidden = true;
   haoZone.hidden = true;
@@ -614,6 +638,14 @@ function showXiaobaiZone() {
   siteTitle.textContent = '小白金毛專區';
   headerHomeButton.hidden = false;
   history.replaceState(null, '', '#xiaobai');
+}
+
+function openXiaobaiZone() {
+  if (requestXiaobaiAccess()) {
+    showXiaobaiZone();
+  } else {
+    showHome();
+  }
 }
 function refreshFundsBySchedule() {
   if (!mengZone.hidden && isFundRefreshTime()) {
@@ -694,7 +726,7 @@ async function boot() {
   } else if (hashDate === 'mengjie') {
     showMengZone();
   } else if (hashDate === 'xiaobai') {
-    showXiaobaiZone();
+    openXiaobaiZone();
   } else {
     showHome();
   }
@@ -702,7 +734,7 @@ async function boot() {
 
 haoZoneButton.addEventListener('click', showHaoZone);
 mengZoneButton.addEventListener('click', showMengZone);
-xiaobaiZoneButton.addEventListener('click', showXiaobaiZone);
+xiaobaiZoneButton.addEventListener('click', openXiaobaiZone);
 headerHomeButton.addEventListener('click', showHome);
 
 setUpdateDate();
@@ -714,6 +746,7 @@ loadUsMarketInfo();
 setInterval(refreshMarketsBySchedule, 5000);
 setInterval(refreshFundsBySchedule, 5000);
 boot();
+
 
 
 
