@@ -48,8 +48,10 @@ let haoNotes = [];
 const homePanel = document.querySelector('#homePanel');
 const haoZone = document.querySelector('#haoZone');
 const mengZone = document.querySelector('#mengZone');
+const xiaobaiZone = document.querySelector('#xiaobaiZone');
 const haoZoneButton = document.querySelector('#haoZoneButton');
 const mengZoneButton = document.querySelector('#mengZoneButton');
+const xiaobaiZoneButton = document.querySelector('#xiaobaiZoneButton');
 const gallery = document.querySelector('#gallery');
 const viewerTitle = document.querySelector('#viewerTitle');
 const updateDate = document.querySelector('#updateDate');
@@ -567,6 +569,7 @@ function showHome() {
   homePanel.hidden = false;
   haoZone.hidden = true;
   mengZone.hidden = true;
+  xiaobaiZone.hidden = true;
   document.body.classList.remove('is-meng-zone');
   siteEyebrow.textContent = 'Max Test Area';
   siteTitle.textContent = 'Max測試專區';
@@ -578,6 +581,7 @@ function showHaoZone() {
   homePanel.hidden = true;
   haoZone.hidden = false;
   mengZone.hidden = true;
+  xiaobaiZone.hidden = true;
   document.body.classList.remove('is-meng-zone');
   siteEyebrow.textContent = 'Hao Notes';
   siteTitle.textContent = '皓哥開示摘要圖';
@@ -590,6 +594,7 @@ function showMengZone() {
   homePanel.hidden = true;
   haoZone.hidden = true;
   mengZone.hidden = false;
+  xiaobaiZone.hidden = true;
   document.body.classList.add('is-meng-zone');
   siteEyebrow.textContent = 'Meng Jie Collection';
   siteTitle.textContent = '孟潔的壓箱寶';
@@ -598,6 +603,18 @@ function showMengZone() {
   loadMengFunds();
 }
 
+
+function showXiaobaiZone() {
+  homePanel.hidden = true;
+  haoZone.hidden = true;
+  mengZone.hidden = true;
+  xiaobaiZone.hidden = false;
+  document.body.classList.remove('is-meng-zone');
+  siteEyebrow.textContent = 'Xiao Bai Gallery';
+  siteTitle.textContent = '小白金毛專區';
+  headerHomeButton.hidden = false;
+  history.replaceState(null, '', '#xiaobai');
+}
 function refreshFundsBySchedule() {
   if (!mengZone.hidden && isFundRefreshTime()) {
     loadMengFunds();
@@ -617,6 +634,7 @@ function selectItem(item) {
   homePanel.hidden = true;
   haoZone.hidden = false;
   mengZone.hidden = true;
+  xiaobaiZone.hidden = true;
   document.body.classList.remove('is-meng-zone');
   siteEyebrow.textContent = 'Hao Notes';
   siteTitle.textContent = '皓哥開示摘要圖';
@@ -675,6 +693,8 @@ async function boot() {
     showHaoZone();
   } else if (hashDate === 'mengjie') {
     showMengZone();
+  } else if (hashDate === 'xiaobai') {
+    showXiaobaiZone();
   } else {
     showHome();
   }
@@ -682,6 +702,7 @@ async function boot() {
 
 haoZoneButton.addEventListener('click', showHaoZone);
 mengZoneButton.addEventListener('click', showMengZone);
+xiaobaiZoneButton.addEventListener('click', showXiaobaiZone);
 headerHomeButton.addEventListener('click', showHome);
 
 setUpdateDate();
@@ -693,6 +714,9 @@ loadUsMarketInfo();
 setInterval(refreshMarketsBySchedule, 5000);
 setInterval(refreshFundsBySchedule, 5000);
 boot();
+
+
+
 
 
 
