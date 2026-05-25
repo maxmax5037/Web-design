@@ -33,6 +33,11 @@
     title: '2026-05-22 皓哥開示摘要',
     file: '2026-05-22_皓哥開示摘要圖.png',
     date: '2026-05-22'
+  },
+  {
+    title: '2026-05-25 皓哥開示摘要',
+    file: '2026-05-25_皓哥開示摘要圖.png',
+    date: '2026-05-25'
   }
 ];
 
@@ -786,26 +791,3 @@ loadUsMarketInfo();
 setInterval(refreshMarketsBySchedule, 5000);
 setInterval(refreshFundsBySchedule, 5000);
 boot();
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
