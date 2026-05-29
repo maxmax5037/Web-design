@@ -925,6 +925,16 @@ h2 {
   margin: 4px 0;
 }
 
+.inline-link {
+  color: var(--accent);
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.inline-link:hover {
+  text-decoration: underline;
+}
+
 .key-takeaway {
   position: relative;
   margin-top: 18px;

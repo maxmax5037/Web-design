@@ -69,6 +69,7 @@ const usIndices = [
 ];
 
 let haoNotes = [];
+let stockCancerNotes = [];
 
 const XIAOBAI_PASSWORD = '0912';
 const XIAOBAI_UNLOCK_KEY = 'xiaobai-unlocked';
@@ -85,6 +86,9 @@ const mengZoneButton = document.querySelector('#mengZoneButton');
 const xiaobaiZoneButton = document.querySelector('#xiaobaiZoneButton');
 const gallery = document.querySelector('#gallery');
 const viewerTitle = document.querySelector('#viewerTitle');
+const stockCancerGallery = document.querySelector('#stockCancerGallery');
+const stockCancerViewerTitle = document.querySelector('#stockCancerViewerTitle');
+const stockCancerReader = document.querySelector('#stockCancerReader');
 const updateDate = document.querySelector('#updateDate');
 const liveTime = document.querySelector('#liveTime');
 const siteEyebrow = document.querySelector('#siteEyebrow');
@@ -122,6 +126,7 @@ const fundCards = {
 };
 
 const imagePath = (file) => `./public/uploads/images/${encodeURIComponent(file)}`;
+const stockCancerPptPath = (file) => `./public/uploads/stock-cancer/${encodeURIComponent(file)}`;
 
 function formatToday() {
   const now = new Date();
@@ -315,7 +320,7 @@ function renderTags(section) {
   return `<div class="tag-cloud">${tags.map((tag) => `<span class="tag">${inlineMarkdown(tag)}</span>`).join('')}</div>`;
 }
 
-function markdownToHtml(markdown) {
+function markdownToHtml(markdown, kicker = 'Hao Notes') {
   const { title, sections } = parseMarkdownSections(markdown);
   const sourceSection = sections.find((section) => section.lines.some((line) => line.startsWith('>')));
   const normalSections = sections.filter((section) => section !== sourceSection);
@@ -326,7 +331,7 @@ function markdownToHtml(markdown) {
   return `
     <div class="note-hero">
       <div>
-        <p class="note-kicker">Hao Notes</p>
+        <p class="note-kicker">${escapeHtml(kicker)}</p>
         <h1>${inlineMarkdown(title)}</h1>
       </div>
       <span class="note-badge">網頁版</span>
@@ -633,6 +638,18 @@ function updateXiaobaiDays() {
     xiaobaiStartWeekday.textContent = weekday;
   }
 }
+
+async function loadStockCancerNotes() {
+  try {
+    const response = await fetch('./public/data/stock-cancer-notes.json', { cache: 'no-store' });
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}`);
+    }
+    stockCancerNotes = await response.json();
+  } catch (error) {
+    stockCancerNotes = [];
+  }
+}
 function showHome() {
   homePanel.hidden = false;
   haoZone.hidden = true;
@@ -670,6 +687,7 @@ function showStockCancerZone() {
   siteEyebrow.textContent = 'Stock Cancer';
   siteTitle.textContent = '股癌專區';
   headerHomeButton.hidden = false;
+  showStockCancerPlaceholder();
   history.replaceState(null, '', '#stock-cancer');
 }
 
@@ -795,15 +813,73 @@ function renderGallery() {
   });
 }
 
+function showStockCancerPlaceholder() {
+  stockCancerViewerTitle.textContent = '股癌整理講義';
+  stockCancerReader.innerHTML = '<div class="note-empty">從左側選一個日期查看網頁版講義。</div>';
+
+  document.querySelectorAll('#stockCancerGallery .gallery-card').forEach((card) => {
+    card.classList.remove('is-active');
+  });
+}
+
+function selectStockCancerItem(item) {
+  homePanel.hidden = true;
+  haoZone.hidden = true;
+  stockCancerZone.hidden = false;
+  mengZone.hidden = true;
+  xiaobaiZone.hidden = true;
+  document.body.classList.remove('is-meng-zone');
+  siteEyebrow.textContent = 'Stock Cancer';
+  siteTitle.textContent = '股癌專區';
+  headerHomeButton.hidden = false;
+  stockCancerViewerTitle.textContent = item.title;
+
+  stockCancerReader.innerHTML = `
+    <div class="note-content">${markdownToHtml(item.markdown, 'Stock Cancer')}</div>
+    <div class="source-card">
+      <p><strong>PPT 下載：</strong><a class="inline-link" href="${stockCancerPptPath(item.ppt)}" download>下載 ${escapeHtml(item.episode)} 自我整理筆記</a></p>
+    </div>
+  `;
+
+  document.querySelectorAll('#stockCancerGallery .gallery-card').forEach((card) => {
+    card.classList.toggle('is-active', card.dataset.date === item.date);
+  });
+
+  history.replaceState(null, '', `#stock-cancer-${item.date}`);
+}
+
+function renderStockCancerGallery() {
+  stockCancerGallery.innerHTML = '';
+
+  stockCancerNotes.forEach((item) => {
+    const button = document.createElement('button');
+    button.className = 'gallery-card';
+    button.type = 'button';
+    button.dataset.date = item.date;
+    button.innerHTML = `
+      <span class="date">${item.date}</span>
+      <span class="title">股癌 ${escapeHtml(item.episode)} 整理講義</span>
+      <span class="hint">閱讀網頁版</span>
+    `;
+    button.addEventListener('click', () => selectStockCancerItem(item));
+    stockCancerGallery.appendChild(button);
+  });
+}
+
 async function boot() {
   await loadHaoNotes();
+  await loadStockCancerNotes();
   renderGallery();
+  renderStockCancerGallery();
 
   const hashDate = decodeURIComponent(location.hash.replace('#', ''));
   const initial = items.find((item) => item.date === hashDate);
+  const stockCancerInitial = stockCancerNotes.find((item) => hashDate === `stock-cancer-${item.date}`);
 
   if (initial) {
     selectItem(initial);
+  } else if (stockCancerInitial) {
+    selectStockCancerItem(stockCancerInitial);
   } else if (hashDate === 'hao') {
     showHaoZone();
   } else if (hashDate === 'stock-cancer') {
