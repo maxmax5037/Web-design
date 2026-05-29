@@ -935,6 +935,34 @@ h2 {
   text-decoration: underline;
 }
 
+.slide-deck {
+  display: grid;
+  gap: 22px;
+}
+
+.slide-page {
+  margin: 0;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+  box-shadow: 0 8px 22px rgba(31, 41, 55, 0.06);
+  overflow: hidden;
+}
+
+.slide-page figcaption {
+  border-bottom: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 800;
+  padding: 10px 14px;
+}
+
+.slide-page img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
 .key-takeaway {
   position: relative;
   margin-top: 18px;

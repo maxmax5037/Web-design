@@ -126,7 +126,7 @@ const fundCards = {
 };
 
 const imagePath = (file) => `./public/uploads/images/${encodeURIComponent(file)}`;
-const stockCancerPptPath = (file) => `./public/uploads/stock-cancer/${encodeURIComponent(file)}`;
+const stockCancerAssetPath = (file) => `./public/uploads/stock-cancer/${file.split('/').map((part) => encodeURIComponent(part)).join('/')}`;
 
 function formatToday() {
   const now = new Date();
@@ -834,12 +834,27 @@ function selectStockCancerItem(item) {
   headerHomeButton.hidden = false;
   stockCancerViewerTitle.textContent = item.title;
 
-  stockCancerReader.innerHTML = `
-    <div class="note-content">${markdownToHtml(item.markdown, 'Stock Cancer')}</div>
-    <div class="source-card">
-      <p><strong>PPT 下載：</strong><a class="inline-link" href="${stockCancerPptPath(item.ppt)}" download>下載 ${escapeHtml(item.episode)} 自我整理筆記</a></p>
-    </div>
-  `;
+  if (item.slides?.length) {
+    stockCancerReader.innerHTML = `
+      <div class="slide-deck">
+        ${item.slides.map((slide, index) => `
+          <figure class="slide-page">
+            <figcaption>第 ${index + 1} 頁</figcaption>
+            <img src="${stockCancerAssetPath(slide)}" alt="${escapeHtml(item.title)} 第 ${index + 1} 頁" />
+          </figure>
+        `).join('')}
+      </div>
+    `;
+  } else {
+    stockCancerReader.innerHTML = `
+      <div class="note-content">${markdownToHtml(item.markdown, 'Stock Cancer')}</div>
+      ${item.ppt ? `
+        <div class="source-card">
+          <p><strong>PPT 下載：</strong><a class="inline-link" href="${stockCancerAssetPath(item.ppt)}" download>下載 ${escapeHtml(item.episode)} 自我整理筆記</a></p>
+        </div>
+      ` : ''}
+    `;
+  }
 
   document.querySelectorAll('#stockCancerGallery .gallery-card').forEach((card) => {
     card.classList.toggle('is-active', card.dataset.date === item.date);
@@ -858,8 +873,8 @@ function renderStockCancerGallery() {
     button.dataset.date = item.date;
     button.innerHTML = `
       <span class="date">${item.date}</span>
-      <span class="title">股癌 ${escapeHtml(item.episode)} 整理講義</span>
-      <span class="hint">閱讀網頁版</span>
+      <span class="title">股癌 ${escapeHtml(item.episode)} ${item.slides?.length ? '投影片版' : '整理講義'}</span>
+      <span class="hint">${item.slides?.length ? '逐頁瀏覽' : '閱讀網頁版'}</span>
     `;
     button.addEventListener('click', () => selectStockCancerItem(item));
     stockCancerGallery.appendChild(button);
