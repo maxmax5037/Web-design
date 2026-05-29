@@ -154,10 +154,15 @@ h2 {
 
 .zone-section {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 240px));
   gap: 12px;
   justify-content: start;
   align-items: start;
+}
+
+.zone-row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(220px, 240px));
+  gap: 12px;
 }
 
 .market-card {
@@ -414,6 +419,27 @@ h2 {
 .simple-zone-heading h2 {
   color: #007f78;
   font-size: clamp(26px, 4vw, 36px);
+}
+
+.empty-zone-card {
+  width: min(520px, 100%);
+  border: 1px solid var(--line);
+  border-left: 5px solid var(--accent);
+  border-radius: 8px;
+  background: var(--surface);
+  box-shadow: 0 10px 28px rgba(31, 41, 55, 0.08);
+  padding: 24px;
+}
+
+.empty-zone-card h3 {
+  margin: 0 0 10px;
+  font-size: 26px;
+}
+
+.empty-zone-card p:last-child {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.7;
 }
 
 .xiaobai-zone {
@@ -1089,6 +1115,10 @@ h2 {
   .home-photo {
     width: 100%;
     justify-self: stretch;
+  }
+
+  .zone-row {
+    grid-template-columns: 1fr;
   }
 
   .market-row {

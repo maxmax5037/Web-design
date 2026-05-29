@@ -76,9 +76,11 @@ const XIAOBAI_START_DATE = '2025-09-12';
 
 const homePanel = document.querySelector('#homePanel');
 const haoZone = document.querySelector('#haoZone');
+const stockCancerZone = document.querySelector('#stockCancerZone');
 const mengZone = document.querySelector('#mengZone');
 const xiaobaiZone = document.querySelector('#xiaobaiZone');
 const haoZoneButton = document.querySelector('#haoZoneButton');
+const stockCancerZoneButton = document.querySelector('#stockCancerZoneButton');
 const mengZoneButton = document.querySelector('#mengZoneButton');
 const xiaobaiZoneButton = document.querySelector('#xiaobaiZoneButton');
 const gallery = document.querySelector('#gallery');
@@ -634,6 +636,7 @@ function updateXiaobaiDays() {
 function showHome() {
   homePanel.hidden = false;
   haoZone.hidden = true;
+  stockCancerZone.hidden = true;
   mengZone.hidden = true;
   xiaobaiZone.hidden = true;
   document.body.classList.remove('is-meng-zone');
@@ -646,6 +649,7 @@ function showHome() {
 function showHaoZone() {
   homePanel.hidden = true;
   haoZone.hidden = false;
+  stockCancerZone.hidden = true;
   mengZone.hidden = true;
   xiaobaiZone.hidden = true;
   document.body.classList.remove('is-meng-zone');
@@ -656,9 +660,23 @@ function showHaoZone() {
   history.replaceState(null, '', '#hao');
 }
 
+function showStockCancerZone() {
+  homePanel.hidden = true;
+  haoZone.hidden = true;
+  stockCancerZone.hidden = false;
+  mengZone.hidden = true;
+  xiaobaiZone.hidden = true;
+  document.body.classList.remove('is-meng-zone');
+  siteEyebrow.textContent = 'Stock Cancer';
+  siteTitle.textContent = '股癌專區';
+  headerHomeButton.hidden = false;
+  history.replaceState(null, '', '#stock-cancer');
+}
+
 function showMengZone() {
   homePanel.hidden = true;
   haoZone.hidden = true;
+  stockCancerZone.hidden = true;
   mengZone.hidden = false;
   xiaobaiZone.hidden = true;
   document.body.classList.add('is-meng-zone');
@@ -694,6 +712,7 @@ function requestXiaobaiAccess() {
 function showXiaobaiZone() {
   homePanel.hidden = true;
   haoZone.hidden = true;
+  stockCancerZone.hidden = true;
   mengZone.hidden = true;
   xiaobaiZone.hidden = false;
   document.body.classList.remove('is-meng-zone');
@@ -728,6 +747,7 @@ function showNotePlaceholder() {
 function selectItem(item) {
   homePanel.hidden = true;
   haoZone.hidden = false;
+  stockCancerZone.hidden = true;
   mengZone.hidden = true;
   xiaobaiZone.hidden = true;
   document.body.classList.remove('is-meng-zone');
@@ -786,6 +806,8 @@ async function boot() {
     selectItem(initial);
   } else if (hashDate === 'hao') {
     showHaoZone();
+  } else if (hashDate === 'stock-cancer') {
+    showStockCancerZone();
   } else if (hashDate === 'mengjie') {
     showMengZone();
   } else if (hashDate === 'xiaobai') {
@@ -796,6 +818,7 @@ async function boot() {
 }
 
 haoZoneButton.addEventListener('click', showHaoZone);
+stockCancerZoneButton.addEventListener('click', showStockCancerZone);
 mengZoneButton.addEventListener('click', showMengZone);
 xiaobaiZoneButton.addEventListener('click', openXiaobaiZone);
 headerHomeButton.addEventListener('click', showHome);
