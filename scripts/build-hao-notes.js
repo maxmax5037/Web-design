@@ -1,9 +1,24 @@
-﻿const fs = require('fs');
+const fs = require('fs');
 const path = require('path');
+
 const root = 'D:/Codex/Web design';
-const dates = ['2026-05-14', '2026-05-15', '2026-05-18', '2026-05-19', '2026-05-20', '2026-05-21', '2026-05-22', '2026-05-25', '2026-05-26', '2026-05-27', '2026-05-28', '2026-05-29'];
+const reportsDir = path.join(root, 'content', 'reports');
+const imagesDir = path.join(root, 'public', 'uploads', 'images');
+const outputPath = path.join(root, 'public', 'data', 'hao-notes.json');
+const maxVisibleDays = 5;
+
+const dates = fs.readdirSync(reportsDir)
+  .map((fileName) => {
+    const match = fileName.match(/^(\d{4}-\d{2}-\d{2})_皓哥開示摘要\.md$/);
+    return match?.[1] || null;
+  })
+  .filter(Boolean)
+  .filter((date) => fs.existsSync(path.join(imagesDir, `${date}_皓哥開示摘要圖.png`)))
+  .sort()
+  .slice(-maxVisibleDays);
+
 const items = dates.map((date) => {
-  const markdown = fs.readFileSync(path.join(root, 'content', 'reports', `${date}_皓哥開示摘要.md`), 'utf8');
+  const markdown = fs.readFileSync(path.join(reportsDir, `${date}_皓哥開示摘要.md`), 'utf8');
   return {
     date,
     title: `${date} 皓哥開示摘要`,
@@ -11,5 +26,6 @@ const items = dates.map((date) => {
     image: `${date}_皓哥開示摘要圖.png`
   };
 });
-fs.writeFileSync(path.join(root, 'public', 'data', 'hao-notes.json'), JSON.stringify(items, null, 2), 'utf8');
-console.log('items', items.length);
+
+fs.writeFileSync(outputPath, JSON.stringify(items, null, 2), 'utf8');
+console.log('items', items.length, dates.join(', '));

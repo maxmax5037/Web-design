@@ -598,8 +598,14 @@ async function loadHaoNotes() {
       throw new Error(`HTTP ${response.status}`);
     }
     haoNotes = await response.json();
+    items.splice(0, items.length, ...haoNotes.map((note) => ({
+      title: note.title,
+      file: note.image,
+      date: note.date
+    })));
   } catch (error) {
     haoNotes = [];
+    items.splice(0, items.length);
   }
 }
 
