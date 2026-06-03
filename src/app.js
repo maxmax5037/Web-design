@@ -511,6 +511,7 @@ async function loadUsMarketInfo() {
       const valueElement = document.querySelector(`#${item.valueId}`);
       const changeElement = document.querySelector(`#${item.changeId}`);
       valueElement.textContent = formatMarketNumber(quote.price);
+      valueElement.dataset.hasValue = 'true';
       setChangeText(changeElement, quote.change, quote.percent);
       seen.add(item.symbol);
     });
@@ -519,7 +520,11 @@ async function loadUsMarketInfo() {
       if (seen.has(item.symbol)) {
         return;
       }
-      document.querySelector(`#${item.valueId}`).textContent = '暫時無法取得';
+      const valueElement = document.querySelector(`#${item.valueId}`);
+      if (valueElement.dataset.hasValue === 'true') {
+        return;
+      }
+      valueElement.textContent = '暫時無法取得';
       const changeElement = document.querySelector(`#${item.changeId}`);
       changeElement.textContent = '--';
       changeElement.dataset.direction = 'flat';
@@ -530,7 +535,11 @@ async function loadUsMarketInfo() {
       : '美股資料目前無法讀取，請稍後重新整理。';
   } catch (error) {
     usIndices.forEach((item) => {
-      document.querySelector(`#${item.valueId}`).textContent = '暫時無法取得';
+      const valueElement = document.querySelector(`#${item.valueId}`);
+      if (valueElement.dataset.hasValue === 'true') {
+        return;
+      }
+      valueElement.textContent = '暫時無法取得';
       const changeElement = document.querySelector(`#${item.changeId}`);
       changeElement.textContent = '--';
       changeElement.dataset.direction = 'flat';
