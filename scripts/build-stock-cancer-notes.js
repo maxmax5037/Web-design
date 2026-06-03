@@ -15,6 +15,19 @@ const items = [
     episode: 'EP665',
     title: '2026-05-27-2 股癌 EP665 敘述詳細版',
     slides: Array.from({ length: 17 }, (_, index) => `slides/2026-05-27-2/投影片${index + 1}.PNG`)
+  },
+  {
+    date: '2026-05-30',
+    episode: 'EP666',
+    title: '2026-05-30 股癌 EP666 自我整理筆記',
+    markdownFile: '2026-05-30_股癌_EP666_自我整理筆記.md',
+    ppt: '2026-05-30_股癌_EP666_自我整理筆記.pptx'
+  },
+  {
+    date: '2026-05-30-2',
+    episode: 'EP666',
+    title: '2026-05-30-2 股癌 EP666 投影片版',
+    slides: Array.from({ length: 17 }, (_, index) => `slides/2026-05-30-2/投影片${index + 1}.PNG`)
   }
 ].map((item) => ({
   date: item.date,

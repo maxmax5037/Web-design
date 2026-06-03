@@ -446,7 +446,7 @@ async function loadTaiwanMarketInfo() {
     marketHigh.textContent = typeof quote.high === 'number' ? formatMarketNumber(quote.high) : '--';
     marketLow.textContent = typeof quote.low === 'number' ? formatMarketNumber(quote.low) : '--';
     marketDate.textContent = quote.date || '--';
-    marketNote.textContent = '來源：臺灣證券交易所 MIS 即時行情。頁面載入先抓一次，台股平日 08:45-13:45 每 5 秒更新。';
+    marketNote.textContent = `來源：${quote.source || '臺灣證券交易所 MIS 即時行情'}。頁面載入先抓一次，台股平日 08:45-13:45 每 5 秒更新。`;
   } catch (error) {
     marketIndex.textContent = '暫時無法取得';
     marketChange.textContent = '--';
