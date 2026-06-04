@@ -112,6 +112,7 @@ const usMarketNote = document.querySelector('#usMarketNote');
 const fundNote = document.querySelector('#fundNote');
 const xiaobaiDaysCount = document.querySelector('#xiaobaiDaysCount');
 const xiaobaiStartWeekday = document.querySelector('#xiaobaiStartWeekday');
+const xiaobaiCalendarDays = document.querySelector('#xiaobaiCalendarDays');
 const fundCards = {
   '1205': {
     nav: document.querySelector('#fund-1205-nav'),
@@ -654,6 +655,53 @@ function updateXiaobaiDays() {
   }
 }
 
+function formatCalendarDate(date) {
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${month}/${day}`;
+}
+
+function updateXiaobaiCalendar() {
+  if (!xiaobaiCalendarDays) {
+    return;
+  }
+
+  const todayUtc = dateOnlyToUtc(getTaipeiDateOnly());
+  const weekdayFormatter = new Intl.DateTimeFormat('zh-TW', {
+    timeZone: 'Asia/Taipei',
+    weekday: 'short'
+  });
+  const fragment = document.createDocumentFragment();
+
+  for (let index = 0; index < 14; index += 1) {
+    const utcTime = todayUtc + index * 86400000;
+    const date = new Date(utcTime);
+    const dateText = date.toISOString().slice(0, 10);
+    const card = document.createElement('article');
+    card.className = `calendar-day${index === 0 ? ' is-today' : ''}`;
+    card.setAttribute('aria-label', `${dateText} 白毛與金毛行事曆`);
+    card.innerHTML = `
+      <div class="calendar-date">
+        <span>${formatCalendarDate(date)}</span>
+        <span>${weekdayFormatter.format(date)}</span>
+      </div>
+      <div class="calendar-plan">
+        <div class="calendar-plan-row">
+          <strong>白毛</strong>
+          <span>待安排</span>
+        </div>
+        <div class="calendar-plan-row">
+          <strong>金毛</strong>
+          <span>待安排</span>
+        </div>
+      </div>
+    `;
+    fragment.append(card);
+  }
+
+  xiaobaiCalendarDays.replaceChildren(fragment);
+}
+
 async function loadStockCancerNotes() {
   try {
     const response = await fetch('./public/data/stock-cancer-notes.json', { cache: 'no-store' });
@@ -932,8 +980,10 @@ headerHomeButton.addEventListener('click', showHome);
 setUpdateDate();
 updateLiveTime();
 updateXiaobaiDays();
+updateXiaobaiCalendar();
 setInterval(updateLiveTime, 1000);
 setInterval(updateXiaobaiDays, 60000);
+setInterval(updateXiaobaiCalendar, 60000);
 loadTaiwanMarketInfo();
 loadTaiwanNightMarketInfo();
 loadUsMarketInfo();
