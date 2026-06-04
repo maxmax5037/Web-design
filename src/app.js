@@ -815,7 +815,7 @@ function updateXiaobaiCalendar() {
     };
   });
   const people = [
-    { key: 'white', label: '白毛', className: 'white' },
+    { key: 'white', label: '小白', className: 'white' },
     { key: 'gold', label: '金毛', className: 'gold' }
   ];
 

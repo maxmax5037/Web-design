@@ -453,6 +453,10 @@ h2 {
   width: 100%;
 }
 
+.xiaobai-zone .simple-zone-heading h2 {
+  color: #4d2f16;
+}
+
 .xiaobai-top-row {
   width: min(1260px, 100%);
   display: grid;
