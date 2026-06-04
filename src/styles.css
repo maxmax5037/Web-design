@@ -453,11 +453,19 @@ h2 {
   width: 100%;
 }
 
+.xiaobai-zone .simple-zone-heading h2 {
+  color: #10223a;
+}
+
+.xiaobai-zone .eyebrow {
+  color: #5f7798;
+}
+
 .xiaobai-top-row {
   width: min(1120px, 100%);
   display: grid;
   grid-template-columns: minmax(340px, 430px) minmax(0, 1fr);
-  align-items: start;
+  align-items: stretch;
   gap: 22px;
   justify-self: start;
 }
@@ -557,23 +565,25 @@ h2 {
 }
 .days-card {
   width: 100%;
-  min-height: 250px;
+  min-height: 390px;
+  height: 100%;
+  border: 1px solid #d9e4ef;
   border-radius: 8px;
   background:
-    linear-gradient(90deg, rgba(136, 82, 22, 0.08) 1px, transparent 1px),
-    linear-gradient(0deg, rgba(136, 82, 22, 0.07) 1px, transparent 1px),
-    linear-gradient(135deg, #ead09f 0%, #f7e4b8 38%, #dfbd7d 100%);
+    linear-gradient(90deg, rgba(89, 145, 201, 0.07) 1px, transparent 1px),
+    linear-gradient(0deg, rgba(89, 145, 201, 0.07) 1px, transparent 1px),
+    linear-gradient(180deg, #ffffff 0%, #f7fbff 100%);
   background-size: 26px 26px, 26px 26px, auto;
-  box-shadow: 0 14px 30px rgba(96, 64, 28, 0.14);
+  box-shadow: 0 16px 36px rgba(31, 42, 55, 0.08);
   display: grid;
   justify-items: center;
-  align-content: start;
+  align-content: stretch;
   padding: clamp(14px, 2.5vw, 22px);
 }
 
 .days-card-brand {
   margin: 0 0 12px;
-  color: rgba(122, 76, 26, 0.72);
+  color: #6a7c96;
   font-size: clamp(22px, 3vw, 32px);
   font-weight: 900;
   letter-spacing: 0;
@@ -581,21 +591,25 @@ h2 {
 
 .days-card-panel {
   width: min(410px, 100%);
+  min-height: 300px;
+  height: 100%;
   overflow: hidden;
   border-radius: 8px;
   background: #ffffff;
-  box-shadow: 0 6px 0 rgba(0, 0, 0, 0.08), 0 12px 24px rgba(70, 50, 30, 0.18);
+  box-shadow: 0 6px 0 rgba(74, 109, 151, 0.08), 0 12px 24px rgba(31, 42, 55, 0.12);
+  display: grid;
+  grid-template-rows: auto 1fr auto;
 }
 
 .days-card-title {
   color: #ffffff;
-  background: linear-gradient(180deg, #ff980f 0%, #f47f0b 100%);
+  background: linear-gradient(180deg, #70a7e3 0%, #4b85c3 100%);
   border-bottom: 1px dashed rgba(255, 255, 255, 0.35);
   padding: 16px 12px;
   text-align: center;
   font-size: clamp(17px, 2.4vw, 23px);
   font-weight: 900;
-  text-shadow: 0 2px 4px rgba(98, 44, 0, 0.25);
+  text-shadow: 0 2px 4px rgba(20, 52, 88, 0.25);
 }
 
 .days-card-title span {
@@ -604,7 +618,7 @@ h2 {
 }
 
 .days-card-body {
-  min-height: 130px;
+  min-height: 170px;
   display: grid;
   place-items: center;
   background:
@@ -624,7 +638,7 @@ h2 {
 
 .days-card-footer {
   border-top: 1px solid #e3e3e3;
-  color: #8a8f98;
+  color: #6a7c96;
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
@@ -635,15 +649,14 @@ h2 {
 }
 
 .couple-calendar {
-  min-height: 250px;
-  border: 1px solid #f4cdb7;
-  border-left: 5px solid #f28c2f;
-  border-right: 3px solid #f8d7be;
+  min-height: 390px;
+  height: 100%;
+  border: 1px solid #d9e4ef;
+  border-left: 5px solid #70a7e3;
+  border-right: 3px solid #d9e4ef;
   border-radius: 8px;
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 249, 242, 0.95) 100%),
-    linear-gradient(135deg, rgba(255, 152, 15, 0.16), rgba(255, 214, 170, 0.1));
-  box-shadow: 0 14px 30px rgba(96, 64, 28, 0.11);
+  background: linear-gradient(180deg, #ffffff 0%, #f7fbff 100%);
+  box-shadow: 0 16px 36px rgba(31, 42, 55, 0.08);
   display: grid;
   gap: 14px;
   padding: 18px;
@@ -662,7 +675,7 @@ h2 {
 }
 
 .calendar-kicker {
-  color: #a76523;
+  color: #5f7798;
   font-size: 12px;
   font-weight: 900;
   text-transform: uppercase;
@@ -670,19 +683,25 @@ h2 {
 
 .couple-calendar-heading h3 {
   margin-top: 4px;
-  color: #4d2f16;
+  color: #10223a;
   font-size: clamp(20px, 2.3vw, 26px);
 }
 
-.couple-calendar-heading span {
-  border: 1px solid #f2c49a;
+.calendar-add-button {
+  border: 1px solid #c8d8ea;
   border-radius: 999px;
-  color: #9b5f25;
-  background: #fff6ec;
-  padding: 6px 10px;
+  color: #315f93;
+  background: #f7fbff;
+  cursor: pointer;
+  padding: 7px 14px;
   font-size: 12px;
   font-weight: 900;
   white-space: nowrap;
+}
+
+.calendar-add-button:hover {
+  border-color: #70a7e3;
+  background: #eaf4ff;
 }
 
 .couple-calendar-grid {
@@ -699,7 +718,7 @@ h2 {
 
 .calendar-person h4 {
   margin: 0;
-  color: #4d2f16;
+  color: #10223a;
   font-size: clamp(22px, 2.7vw, 32px);
   font-weight: 900;
   line-height: 1.1;
@@ -710,7 +729,7 @@ h2 {
 }
 
 .calendar-person-gold h4 {
-  color: #7a531d;
+  color: #b68a35;
 }
 
 .calendar-list {
@@ -719,37 +738,69 @@ h2 {
 }
 
 .calendar-list-row {
-  min-height: 28px;
+  min-height: 54px;
+  border: 1px solid #d9e4ef;
   border-radius: 6px;
+  background: rgba(255, 255, 255, 0.9);
   display: grid;
-  grid-template-columns: 54px 34px minmax(70px, 1fr);
-  align-items: end;
-  gap: 8px;
-  padding: 4px 6px;
+  grid-template-columns: 74px minmax(0, 1fr);
+  align-items: stretch;
+  gap: 10px;
+  padding: 8px;
 }
 
 .calendar-list-row.is-today {
-  background: #fff3e3;
+  border-color: #70a7e3;
+  background: #eef7ff;
+}
+
+.calendar-date-block,
+.calendar-event-list {
+  display: grid;
+  align-content: center;
+}
+
+.calendar-date-block {
+  gap: 4px;
 }
 
 .calendar-date,
 .calendar-weekday {
-  color: #5a3619;
+  color: #10223a;
   font-size: 15px;
   font-weight: 900;
   line-height: 1;
 }
 
 .calendar-weekday {
-  color: #a46b2d;
+  color: #6a7c96;
   font-size: 13px;
 }
 
-.calendar-slot-line {
+.calendar-event-list {
+  gap: 5px;
   min-width: 0;
-  height: 1px;
-  border-bottom: 2px solid rgba(77, 47, 22, 0.66);
-  transform: translateY(-3px);
+}
+
+.calendar-empty,
+.calendar-event {
+  border-radius: 6px;
+  padding: 6px 8px;
+  font-size: 13px;
+  line-height: 1.35;
+}
+
+.calendar-empty {
+  color: #8a98aa;
+  background: #f3f7fb;
+}
+
+.calendar-event {
+  color: #10223a;
+  background: #ffffff;
+  border: 1px solid #d9e4ef;
+  box-shadow: 0 3px 10px rgba(31, 42, 55, 0.04);
+  overflow-wrap: anywhere;
 }
 .dog-chase {
   width: min(760px, 100%);

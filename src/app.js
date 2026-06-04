@@ -74,6 +74,7 @@ let stockCancerNotes = [];
 const XIAOBAI_PASSWORD = '0912';
 const XIAOBAI_UNLOCK_KEY = 'xiaobai-unlocked';
 const XIAOBAI_START_DATE = '2025-09-12';
+const XIAOBAI_EVENTS_KEY = 'xiaobai-calendar-events';
 
 const homePanel = document.querySelector('#homePanel');
 const haoZone = document.querySelector('#haoZone');
@@ -113,6 +114,7 @@ const fundNote = document.querySelector('#fundNote');
 const xiaobaiDaysCount = document.querySelector('#xiaobaiDaysCount');
 const xiaobaiStartWeekday = document.querySelector('#xiaobaiStartWeekday');
 const xiaobaiCalendarDays = document.querySelector('#xiaobaiCalendarDays');
+const xiaobaiAddEventButton = document.querySelector('#xiaobaiAddEventButton');
 const fundCards = {
   '1205': {
     nav: document.querySelector('#fund-1205-nav'),
@@ -661,12 +663,50 @@ function formatCalendarDate(date) {
   return `${month}/${day}`;
 }
 
+function getXiaobaiEvents() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(XIAOBAI_EVENTS_KEY) || '{}');
+    return {
+      white: saved.white && typeof saved.white === 'object' ? saved.white : {},
+      gold: saved.gold && typeof saved.gold === 'object' ? saved.gold : {}
+    };
+  } catch (error) {
+    return { white: {}, gold: {} };
+  }
+}
+
+function saveXiaobaiEvents(events) {
+  localStorage.setItem(XIAOBAI_EVENTS_KEY, JSON.stringify(events));
+}
+
+function normalizeXiaobaiPerson(value) {
+  const text = String(value || '').trim();
+  if (text === '1' || text.includes('白')) {
+    return 'white';
+  }
+  if (text === '2' || text.includes('金')) {
+    return 'gold';
+  }
+  return '';
+}
+
+function renderCalendarEvents(events) {
+  if (!events.length) {
+    return '<span class="calendar-empty">待安排</span>';
+  }
+
+  return events
+    .map((event) => `<span class="calendar-event">${escapeHtml(event)}</span>`)
+    .join('');
+}
+
 function updateXiaobaiCalendar() {
   if (!xiaobaiCalendarDays) {
     return;
   }
 
   const todayUtc = dateOnlyToUtc(getTaipeiDateOnly());
+  const savedEvents = getXiaobaiEvents();
   const weekdayFormatter = new Intl.DateTimeFormat('zh-TW', {
     timeZone: 'Asia/Taipei',
     weekday: 'short'
@@ -684,8 +724,8 @@ function updateXiaobaiCalendar() {
     };
   });
   const people = [
-    { label: '白毛', className: 'white' },
-    { label: '金毛', className: 'gold' }
+    { key: 'white', label: '白毛', className: 'white' },
+    { key: 'gold', label: '金毛', className: 'gold' }
   ];
 
   people.forEach((person) => {
@@ -695,19 +735,50 @@ function updateXiaobaiCalendar() {
     column.innerHTML = `
       <h4>${person.label}</h4>
       <div class="calendar-list">
-        ${days.map((day) => `
-          <div class="calendar-list-row${day.isToday ? ' is-today' : ''}" aria-label="${day.dateText} ${person.label}行程">
-            <span class="calendar-date">${day.label}</span>
-            <span class="calendar-weekday">${day.weekday}</span>
-            <span class="calendar-slot-line" aria-hidden="true"></span>
-          </div>
-        `).join('')}
+        ${days.map((day) => {
+          const dayEvents = savedEvents[person.key][day.dateText];
+          return `
+            <div class="calendar-list-row${day.isToday ? ' is-today' : ''}" aria-label="${day.dateText} ${person.label}行程">
+              <div class="calendar-date-block">
+                <span class="calendar-date">${day.label}</span>
+                <span class="calendar-weekday">${day.weekday}</span>
+              </div>
+              <div class="calendar-event-list">
+                ${renderCalendarEvents(Array.isArray(dayEvents) ? dayEvents : [])}
+              </div>
+            </div>
+          `;
+        }).join('')}
       </div>
     `;
     fragment.append(column);
   });
 
   xiaobaiCalendarDays.replaceChildren(fragment);
+}
+
+function addXiaobaiCalendarEvent() {
+  const person = normalizeXiaobaiPerson(window.prompt('輸入對象：白毛或金毛'));
+  if (!person) {
+    return;
+  }
+
+  const date = window.prompt('輸入日期：YYYY-MM-DD', getTaipeiDateOnly());
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(String(date || '').trim())) {
+    return;
+  }
+
+  const text = window.prompt('輸入事情');
+  if (!text || !text.trim()) {
+    return;
+  }
+
+  const events = getXiaobaiEvents();
+  const day = date.trim();
+  events[person][day] = Array.isArray(events[person][day]) ? events[person][day] : [];
+  events[person][day].push(text.trim());
+  saveXiaobaiEvents(events);
+  updateXiaobaiCalendar();
 }
 
 async function loadStockCancerNotes() {
@@ -984,6 +1055,7 @@ stockCancerZoneButton.addEventListener('click', showStockCancerZone);
 mengZoneButton.addEventListener('click', showMengZone);
 xiaobaiZoneButton.addEventListener('click', openXiaobaiZone);
 headerHomeButton.addEventListener('click', showHome);
+xiaobaiAddEventButton?.addEventListener('click', addXiaobaiCalendarEvent);
 
 setUpdateDate();
 updateLiveTime();
