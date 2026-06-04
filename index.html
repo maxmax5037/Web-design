@@ -245,6 +245,36 @@
             <div class="couple-calendar-grid" id="xiaobaiCalendarDays"></div>
           </section>
         </div>
+        <dialog class="calendar-dialog" id="xiaobaiEventDialog">
+          <form class="calendar-event-form" id="xiaobaiEventForm" method="dialog">
+            <div class="calendar-dialog-heading">
+              <div>
+                <p class="calendar-kicker">New Schedule</p>
+                <h3>新增行程</h3>
+              </div>
+              <button class="calendar-dialog-close" id="xiaobaiEventCancelButton" type="button" aria-label="關閉">×</button>
+            </div>
+            <label>
+              <span>對象</span>
+              <select id="xiaobaiEventPerson" required>
+                <option value="white">白毛</option>
+                <option value="gold">金毛</option>
+              </select>
+            </label>
+            <label>
+              <span>日期</span>
+              <select id="xiaobaiEventDate" required></select>
+            </label>
+            <label>
+              <span>事情名稱</span>
+              <input id="xiaobaiEventText" type="text" maxlength="80" autocomplete="off" required />
+            </label>
+            <div class="calendar-dialog-actions">
+              <button class="calendar-secondary-button" id="xiaobaiEventCancelAction" type="button">取消</button>
+              <button class="calendar-primary-button" type="submit">新增行程</button>
+            </div>
+          </form>
+        </dialog>
         <section class="dog-chase" aria-label="小白追著金毛動畫">
           <div class="dog-track">
             <svg class="chasing-dog golden-dog" viewBox="0 0 260 150" aria-label="金毛小狗" role="img">

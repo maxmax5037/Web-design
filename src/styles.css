@@ -794,7 +794,137 @@ h2 {
   background: #ffffff;
   border: 1px solid #f3dcc8;
   box-shadow: 0 3px 10px rgba(96, 64, 28, 0.05);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
   overflow-wrap: anywhere;
+}
+
+.calendar-delete-button {
+  width: 22px;
+  height: 22px;
+  border: 0;
+  border-radius: 50%;
+  color: #a45d36;
+  background: #fff0e7;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  font-size: 15px;
+  line-height: 1;
+  padding: 0;
+}
+
+.calendar-delete-button:hover {
+  color: #ffffff;
+  background: #c86442;
+}
+
+.calendar-dialog {
+  width: min(420px, calc(100% - 32px));
+  border: 1px solid #f1d4ab;
+  border-radius: 8px;
+  color: #4d2f16;
+  background: #fffaf3;
+  box-shadow: 0 22px 60px rgba(70, 50, 30, 0.22);
+  padding: 0;
+}
+
+.calendar-dialog::backdrop {
+  background: rgba(31, 41, 55, 0.38);
+}
+
+.calendar-event-form {
+  display: grid;
+  gap: 16px;
+  padding: 20px;
+}
+
+.calendar-dialog-heading {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.calendar-dialog-heading h3 {
+  margin: 4px 0 0;
+  font-size: 24px;
+}
+
+.calendar-dialog-close {
+  width: 32px;
+  height: 32px;
+  border: 1px solid #f1d4ab;
+  border-radius: 50%;
+  color: #9b5f25;
+  background: #ffffff;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  font-size: 20px;
+  line-height: 1;
+  padding: 0;
+}
+
+.calendar-event-form label {
+  display: grid;
+  gap: 7px;
+  color: #6d4420;
+  font-size: 14px;
+  font-weight: 900;
+}
+
+.calendar-event-form select,
+.calendar-event-form input {
+  width: 100%;
+  min-height: 42px;
+  border: 1px solid #e9cba8;
+  border-radius: 7px;
+  color: #4d2f16;
+  background: #ffffff;
+  font: inherit;
+  padding: 9px 11px;
+}
+
+.calendar-event-form select:focus,
+.calendar-event-form input:focus {
+  border-color: #f28c2f;
+  outline: 2px solid rgba(242, 140, 47, 0.18);
+}
+
+.calendar-dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.calendar-secondary-button,
+.calendar-primary-button {
+  border-radius: 7px;
+  cursor: pointer;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 900;
+  padding: 9px 14px;
+}
+
+.calendar-secondary-button {
+  border: 1px solid #e9cba8;
+  color: #8a653e;
+  background: #ffffff;
+}
+
+.calendar-primary-button {
+  border: 1px solid #f28c2f;
+  color: #ffffff;
+  background: #f28c2f;
+}
+
+.calendar-primary-button:hover {
+  background: #dd7820;
 }
 .dog-chase {
   width: min(760px, 100%);
