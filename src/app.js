@@ -672,32 +672,40 @@ function updateXiaobaiCalendar() {
     weekday: 'short'
   });
   const fragment = document.createDocumentFragment();
-
-  for (let index = 0; index < 14; index += 1) {
+  const days = Array.from({ length: 7 }, (_, index) => {
     const utcTime = todayUtc + index * 86400000;
     const date = new Date(utcTime);
-    const dateText = date.toISOString().slice(0, 10);
-    const card = document.createElement('article');
-    card.className = `calendar-day${index === 0 ? ' is-today' : ''}`;
-    card.setAttribute('aria-label', `${dateText} 白毛與金毛行事曆`);
-    card.innerHTML = `
-      <div class="calendar-date">
-        <span>${formatCalendarDate(date)}</span>
-        <span>${weekdayFormatter.format(date)}</span>
-      </div>
-      <div class="calendar-plan">
-        <div class="calendar-plan-row">
-          <strong>白毛</strong>
-          <span>待安排</span>
-        </div>
-        <div class="calendar-plan-row">
-          <strong>金毛</strong>
-          <span>待安排</span>
-        </div>
+    return {
+      date,
+      dateText: date.toISOString().slice(0, 10),
+      label: formatCalendarDate(date),
+      weekday: weekdayFormatter.format(date),
+      isToday: index === 0
+    };
+  });
+  const people = [
+    { label: '白毛', className: 'white' },
+    { label: '金毛', className: 'gold' }
+  ];
+
+  people.forEach((person) => {
+    const column = document.createElement('section');
+    column.className = `calendar-person calendar-person-${person.className}`;
+    column.setAttribute('aria-label', `${person.label}未來七天行事曆`);
+    column.innerHTML = `
+      <h4>${person.label}</h4>
+      <div class="calendar-list">
+        ${days.map((day) => `
+          <div class="calendar-list-row${day.isToday ? ' is-today' : ''}" aria-label="${day.dateText} ${person.label}行程">
+            <span class="calendar-date">${day.label}</span>
+            <span class="calendar-weekday">${day.weekday}</span>
+            <span class="calendar-slot-line" aria-hidden="true"></span>
+          </div>
+        `).join('')}
       </div>
     `;
-    fragment.append(card);
-  }
+    fragment.append(column);
+  });
 
   xiaobaiCalendarDays.replaceChildren(fragment);
 }
